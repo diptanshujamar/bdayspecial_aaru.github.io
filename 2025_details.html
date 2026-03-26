@@ -13,31 +13,27 @@
         }
         body { margin: 0; font-family: 'Montserrat', sans-serif; background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%); min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; }
 
-        /* 2025 Neon Hexagon Preloader */
-        #hex-preloader { position: fixed; inset: 0; background: #130f40; z-index: 9999999; display: flex; justify-content: center; align-items: center; flex-direction: column; transition: opacity 1.2s ease, visibility 1.2s; overflow: hidden; }
+        /* 2025 Royal Love Preloader */
+        #hex-preloader { position: fixed; inset: 0; background: linear-gradient(135deg, #4b0000, #1a0000); z-index: 9999999; display: flex; justify-content: center; align-items: center; flex-direction: column; transition: opacity 1.2s ease, visibility 1.2s; overflow: hidden; }
         #hex-preloader.hidden { opacity: 0; visibility: hidden; }
         
-        .hex-container { margin-bottom: 50px; position: relative; width: 120px; height: 138px; display: flex; justify-content: center; align-items: center; }
-        
-        .hexagon { position: absolute; width: 100%; height: 100%; top: 0; left: 0; border-left: 2px solid #a18cd1; border-right: 2px solid #fbc2eb; animation: hexPulse 1.5s infinite alternate; }
-        
-        /* Multiple offset hexagons */
-        .hex1 { transform: rotate(0deg); }
-        .hex2 { transform: rotate(60deg); animation-delay: 0.2s; }
-        .hex3 { transform: rotate(120deg); animation-delay: 0.4s; }
+        .diamond-heart { margin-bottom: 50px; width: 80px; height: 80px; background: #ff4757; transform: rotate(45deg); position: relative; animation: diamondPulse 2s infinite cubic-bezier(0.1, 0.8, 0.3, 1); box-shadow: 0 0 60px rgba(255, 71, 87, 0.9); }
+        .diamond-heart::before, .diamond-heart::after { content: ''; position: absolute; width: 80px; height: 80px; background: #ff4757; border-radius: 50%; box-shadow: 0 0 40px rgba(255, 71, 87, 0.7); }
+        .diamond-heart::before { top: -40px; left: 0; }
+        .diamond-heart::after { top: 0; left: 40px; }
 
-        @keyframes hexPulse { 0% { filter: drop-shadow(0 0 5px #a18cd1); transform: scale(0.9); } 100% { filter: drop-shadow(0 0 20px #fbc2eb); transform: scale(1.1); } }
+        .gold-ring { position: absolute; width: 140px; height: 140px; border: 2px dashed #eccc68; border-radius: 50%; top: 0px; left: -30px; animation: spinRing 8s linear infinite; box-shadow: 0 0 20px rgba(236, 204, 104, 0.3); }
 
-        .hex-core { width: 40px; height: 40px; background: #fff; border-radius: 50%; box-shadow: 0 0 30px #fff, 0 0 60px #fbc2eb; z-index: 10; animation: coreGlow 1s infinite alternate; }
-        @keyframes coreGlow { from { opacity: 0.5; } to { opacity: 1; transform: scale(1.2); } }
+        @keyframes diamondPulse { 0% { transform: scale(0.9) rotate(45deg); } 50% { transform: scale(1.2) rotate(45deg); filter: brightness(1.5); } 100% { transform: scale(0.9) rotate(45deg); } }
+        @keyframes spinRing { 100% { transform: rotate(360deg); } }
 
-        .loading-text { font-family: 'Montserrat', sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: 12px; font-size: 2rem; color: #fff; text-shadow: 0 0 20px #a18cd1; display: flex; justify-content: center; margin-bottom: 20px; }
+        .loading-text { font-family: 'Montserrat', sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: 12px; font-size: 2rem; color: #fff; text-shadow: 0 0 20px #ff4757; display: flex; justify-content: center; margin-bottom: 20px; }
         .loading-text span { opacity: 0; filter: blur(10px); transform: translateX(-30px); animation: slideScan 1s forwards; }
         @keyframes slideScan { to { opacity: 1; filter: blur(0); transform: translateX(0); } }
 
-        /* Grid lines background */
-        .cyber-grid { position: absolute; inset: 0; background-size: 50px 50px; background-image: linear-gradient(to right, rgba(161, 140, 209, 0.1) 1px, transparent 1px), linear-gradient(to bottom, rgba(161, 140, 209, 0.1) 1px, transparent 1px); animation: panGrid 10s linear infinite; }
-        @keyframes panGrid { 100% { background-position: 50px 50px; } }
+        /* Falling Gold Dust */
+        .gold-dust { position: absolute; inset: 0; background-image: radial-gradient(1px 1px at 20px 30px, #eccc68, rgba(0,0,0,0)), radial-gradient(2px 2px at 40px 70px, #eccc68, rgba(0,0,0,0)), radial-gradient(1px 1px at 90px 40px, #ffffff, rgba(0,0,0,0)); background-repeat: repeat; background-size: 150px 150px; animation: snowDust 10s linear infinite; opacity: 0.6; pointer-events: none; }
+        @keyframes snowDust { 0% { transform: translateY(0); } 100% { transform: translateY(150px); } }
 
         /* General page */
         .content { flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; transform: translateY(50px); transition: 1s cubic-bezier(0.2, 0.8, 0.2, 1); }
@@ -50,21 +46,33 @@
         .btn-back:hover { transform: scale(1.05); box-shadow: 0 15px 30px rgba(161, 140, 209, 0.6); }
 
         body.is-loading { overflow: hidden; height: 100vh; }
-    </style>
+            /* Ambient floating particles */
+        .ambient-particle { position: absolute; bottom: -5vh; border-radius: 50%; pointer-events: none; opacity: 0; background: radial-gradient(circle, #fff 0%, rgba(255,71,87,0.8) 40%, rgba(255,71,87,0) 80%); animation: floatParticle linear infinite; z-index: 15; }
+        @keyframes floatParticle { 0% { transform: translateY(0) scale(0.5); opacity: 0; } 20% { opacity: 0.8; } 80% { opacity: 0.6; } 100% { transform: translateY(-110vh) scale(1.5); opacity: 0; } }
+        .glowing-orb { position: absolute; border-radius: 50%; background: linear-gradient(45deg, #ff4757, #eccc68); filter: blur(80px); opacity: 0.15; z-index: 1; animation: orbFloat 10s infinite alternate ease-in-out; pointer-events: none; }
+        @keyframes orbFloat { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(50px, -50px) scale(1.2); } }
+        .progress-box { width: 320px; height: 6px; background: rgba(255, 255, 255, 0.05); margin: 20px auto 0; position: relative; overflow: hidden; border-radius: 20px; box-shadow: inset 0 0 10px rgba(0,0,0,0.5), 0 0 15px rgba(255, 71, 87, 0.2); border: 1px solid rgba(255, 255, 255, 0.1); z-index: 20; }
+        .progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg, #ff4757, #eccc68, #ff4757); background-size: 200% 100%; border-radius: 20px; animation: fillProgress 3.5s cubic-bezier(0.1, 0.8, 0.3, 1) forwards, shimmer 2s linear infinite; box-shadow: 0 0 20px #ff4757; }
+        .loading-subtext { font-family: 'Montserrat', sans-serif; font-size: 1rem; color: #fff; margin-top: 25px; letter-spacing: 3px; text-transform: uppercase; animation: pulseSubtext 2s infinite; font-weight: bold; text-align: center; }
+        @keyframes pulseSubtext { 0%, 100% { opacity: 0.7; } 50% { opacity: 1; text-shadow: 0 0 15px rgba(255,255,255,0.8); } }
+        @keyframes fillProgress { 0% { width: 0%; } 20% { width: 15%; } 50% { width: 60%; } 80% { width: 85%; } 100% { width: 100%; } }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+</style>
 </head>
 <body class="is-loading">
 
     <div id="hex-preloader">
-        <div class="cyber-grid"></div>
-        <div class="hex-container">
-            <div class="hexagon hex1"></div>
-            <div class="hexagon hex2"></div>
-            <div class="hexagon hex3"></div>
-            <div class="hex-core"></div>
+        <div class="gold-dust"></div>
+        <div style="position:relative;">
+            <div class="diamond-heart"></div>
+            <div class="gold-ring"></div>
         </div>
         <div class="loading-text">
             <span>2</span><span>0</span><span>2</span><span>5</span>
         </div>
+        <div class="progress-box"><div class="progress-bar"></div></div>
+        <div class="loading-subtext">Initializing the future...</div>
+
     </div>
 
     <div class="content">
@@ -80,6 +88,38 @@
             
             spans.forEach((span, i) => { span.style.animationDelay = `${i * 0.2}s`; });
 
+            
+            const loaderDiv = document.getElementById('hex-preloader');
+            const particlesContainer = document.createElement('div');
+            particlesContainer.id = 'particles';
+            particlesContainer.style.position = 'absolute';
+            particlesContainer.style.inset = '0';
+            loaderDiv.appendChild(particlesContainer);
+
+            for(let i = 0; i < 50; i++) {
+                let p = document.createElement('div');
+                p.className = 'ambient-particle';
+                let size = Math.random() * 8 + 4;
+                p.style.width = size + 'px';
+                p.style.height = size + 'px';
+                p.style.left = Math.random() * 100 + 'vw';
+                p.style.animationDuration = (Math.random() * 5 + 4) + 's';
+                p.style.animationDelay = Math.random() * 3 + 's';
+                particlesContainer.appendChild(p);
+            }
+            for(let i = 0; i < 4; i++) {
+                let orb = document.createElement('div');
+                orb.className = 'glowing-orb';
+                let size = Math.random() * 300 + 200;
+                orb.style.width = size + 'px';
+                orb.style.height = size + 'px';
+                orb.style.left = (Math.random() * 80) + 'vw';
+                orb.style.top = (Math.random() * 80) + 'vh';
+                orb.style.animationDelay = Math.random() * 5 + 's';
+                orb.style.animationDuration = (Math.random() * 10 + 10) + 's';
+                loaderDiv.appendChild(orb);
+            }
+
             setTimeout(() => {
                 preloader.classList.add('hidden');
                 document.body.classList.remove('is-loading');
@@ -87,7 +127,7 @@
                     preloader.style.display = 'none'; 
                     document.body.classList.add('preloader-finished');
                 }, 1200);
-            }, 3000);
+            }, 3800);
         });
     </script>
 </body>
