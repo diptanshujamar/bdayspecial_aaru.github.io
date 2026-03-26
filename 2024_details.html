@@ -13,26 +13,24 @@
         }
         body { margin: 0; font-family: 'Montserrat', sans-serif; background: linear-gradient(135deg, #fff1eb 0%, #ace0f9 100%); min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; }
 
-        /* 2024 Golden Sunburst Preloader */
-        #sunburst-preloader { position: fixed; inset: 0; background: radial-gradient(circle at center, #ffd32a 0%, #e1b12c 100%); z-index: 9999999; display: flex; justify-content: center; align-items: center; flex-direction: column; transition: opacity 1.2s ease, visibility 1.2s; overflow: hidden; }
+        /* 2024 Love Preloader - Sunset Blooming Rose */
+        #sunburst-preloader { position: fixed; inset: 0; background: linear-gradient(135deg, #fab1a0, #ff7675); z-index: 9999999; display: flex; justify-content: center; align-items: center; flex-direction: column; transition: opacity 1.2s ease, visibility 1.2s; overflow: hidden; }
         #sunburst-preloader.hidden { opacity: 0; visibility: hidden; }
         
-        .sun-core { width: 100px; height: 100px; border-radius: 50%; background: #fff; box-shadow: 0 0 50px #fff, 0 0 100px #f6d365; position: relative; animation: pulseSun 2s infinite alternate; }
-        .sun-ring { margin-bottom: 50px; display: flex; justify-content: center; align-items: center; position: relative; width: 150px; height: 150px; border: 4px solid rgba(255,255,255,0.4); border-radius: 50%; animation: spinSun 10s linear infinite; }
-        .sun-ring::before, .sun-ring::after { content: ''; position: absolute; width: 20px; height: 20px; background: #fff; border-radius: 50%; }
-        .sun-ring::before { top: -10px; left: 50%; transform: translateX(-50%); box-shadow: 0 0 20px #fff; }
-        .sun-ring::after { bottom: -10px; left: 50%; transform: translateX(-50%); box-shadow: 0 0 20px #fff; }
+        .rose-core { width: 100px; height: 100px; border-radius: 50% 50% 0 50%; background: #d63031; transform: rotate(45deg); position: relative; animation: heartbeat 1.5s infinite cubic-bezier(0.215, 0.61, 0.355, 1); box-shadow: 0 0 50px rgba(214, 48, 49, 0.8); margin-bottom: 50px; }
+        .rose-core::before, .rose-core::after { content: ''; position: absolute; width: 100px; height: 100px; background: #c0392b; border-radius: 50%; box-shadow: 0 0 30px rgba(192, 57, 43, 0.6); }
+        .rose-core::before { top: -50px; left: 0; }
+        .rose-core::after { top: 0; left: 50px; border-radius: 50% 50% 50% 0; }
 
-        @keyframes pulseSun { 0% { transform: scale(0.9); box-shadow: 0 0 30px #fff; } 100% { transform: scale(1.1); box-shadow: 0 0 80px #fff, 0 0 150px #f6d365; } }
-        @keyframes spinSun { 100% { transform: rotate(360deg); } }
+        @keyframes heartbeat { 0% { transform: rotate(45deg) scale(0.8); } 20% { transform: rotate(45deg) scale(1.1); } 40% { transform: rotate(45deg) scale(0.9); } 60% { transform: rotate(45deg) scale(1.2); } 100% { transform: rotate(45deg) scale(0.8); } }
 
         .loading-text { font-family: 'Dancing Script', cursive; font-size: 3.5rem; color: #fff; text-shadow: 0 0 20px rgba(255,255,255,0.8); display: flex; justify-content: center; margin-bottom: 20px; }
         .loading-text span { opacity: 0; transform: translateY(-20px); animation: dropIn 0.8s forwards, textGlimmer 2s infinite alternate; }
         @keyframes dropIn { to { opacity: 1; transform: translateY(0); } }
         @keyframes textGlimmer { from { opacity: 0.8; } to { opacity: 1; text-shadow: 0 0 30px #fff; } }
 
-        .sun-rays { position: absolute; inset: 0; background: conic-gradient(from 0deg, transparent 0deg, rgba(255,255,255,0.2) 20deg, transparent 40deg, rgba(255,255,255,0.2) 60deg, transparent 80deg, rgba(255,255,255,0.2) 100deg, transparent 120deg, rgba(255,255,255,0.2) 140deg, transparent 160deg, rgba(255,255,255,0.2) 180deg, transparent 200deg, rgba(255,255,255,0.2) 220deg, transparent 240deg, rgba(255,255,255,0.2) 260deg, transparent 280deg, rgba(255,255,255,0.2) 300deg, transparent 320deg, rgba(255,255,255,0.2) 340deg, transparent 360deg); animation: spinRays 20s linear infinite; pointer-events: none; }
-        @keyframes spinRays { 100% { transform: rotate(360deg); } }
+        .floating-heart { position: absolute; font-size: 2rem; color: rgba(255,255,255,0.6); animation: floatUpHeart 4s ease-in infinite; pointer-events: none; }
+        @keyframes floatUpHeart { 0% { transform: translateY(100vh) scale(0.5); opacity: 0; } 50% { opacity: 1; } 100% { transform: translateY(-20vh) scale(1.5); opacity: 0; } }
 
         /* General page */
         .content { flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; transform: scale(0.9); transition: 1s ease; }
@@ -45,18 +43,35 @@
         .btn-back:hover { transform: scale(1.05); box-shadow: 0 15px 30px rgba(225, 177, 44, 0.6); }
 
         body.is-loading { overflow: hidden; height: 100vh; }
-    </style>
+            /* Ambient floating particles */
+        .ambient-particle { position: absolute; bottom: -5vh; border-radius: 50%; pointer-events: none; opacity: 0; background: radial-gradient(circle, #fff 0%, rgba(255,118,117,0.8) 40%, rgba(255,118,117,0) 80%); animation: floatParticle linear infinite; z-index: 15; }
+        @keyframes floatParticle { 0% { transform: translateY(0) scale(0.5); opacity: 0; } 20% { opacity: 0.8; } 80% { opacity: 0.6; } 100% { transform: translateY(-110vh) scale(1.5); opacity: 0; } }
+        .glowing-orb { position: absolute; border-radius: 50%; background: linear-gradient(45deg, #fab1a0, #ff7675); filter: blur(80px); opacity: 0.25; z-index: 1; animation: orbFloat 10s infinite alternate ease-in-out; pointer-events: none; }
+        @keyframes orbFloat { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(50px, -50px) scale(1.2); } }
+        .progress-box { width: 320px; height: 6px; background: rgba(255, 255, 255, 0.05); margin: 20px auto 0; position: relative; overflow: hidden; border-radius: 20px; box-shadow: inset 0 0 10px rgba(0,0,0,0.5), 0 0 15px rgba(255, 118, 117, 0.2); border: 1px solid rgba(255, 255, 255, 0.1); z-index: 20; }
+        .progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg, #ff7675, #fab1a0, #ff7675); background-size: 200% 100%; border-radius: 20px; animation: fillProgress 3.5s cubic-bezier(0.1, 0.8, 0.3, 1) forwards, shimmer 2s linear infinite; box-shadow: 0 0 20px #ff7675; }
+        .loading-subtext { font-family: 'Montserrat', sans-serif; font-size: 1rem; color: #fff; margin-top: 25px; letter-spacing: 3px; text-transform: uppercase; animation: pulseSubtext 2s infinite; font-weight: bold; text-align: center; }
+        @keyframes pulseSubtext { 0%, 100% { opacity: 0.7; } 50% { opacity: 1; text-shadow: 0 0 15px rgba(255,255,255,0.8); } }
+        @keyframes fillProgress { 0% { width: 0%; } 20% { width: 15%; } 50% { width: 60%; } 80% { width: 85%; } 100% { width: 100%; } }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+</style>
 </head>
 <body class="is-loading">
 
     <div id="sunburst-preloader">
-        <div class="sun-rays"></div>
-        <div class="sun-ring">
-            <div class="sun-core"></div>
-        </div>
+        <div class="rose-core"></div>
+        <!-- Generating some floating hearts purely in HTML for simplicity -->
+        <div class="floating-heart" style="left: 20%; animation-delay: 0s;">💖</div>
+        <div class="floating-heart" style="left: 50%; animation-delay: 1s;">✨</div>
+        <div class="floating-heart" style="left: 80%; animation-delay: 2s;">💓</div>
+        <div class="floating-heart" style="left: 35%; animation-delay: 3s;">💗</div>
+        <div class="floating-heart" style="left: 65%; animation-delay: 1.5s;">💘</div>
         <div class="loading-text">
-            <span>2</span><span>0</span><span>2</span><span>4</span><span>&nbsp;</span><span>M</span><span>e</span><span>m</span><span>o</span><span>r</span><span>i</span><span>e</span><span>s</span><span>...</span>
+            <span>2</span><span>0</span><span>2</span><span>4</span><span>&nbsp;</span><span>L</span><span>o</span><span>v</span><span>e</span><span>...</span>
         </div>
+        <div class="progress-box"><div class="progress-bar"></div></div>
+        <div class="loading-subtext">Gathering warmth...</div>
+
     </div>
 
     <div class="content">
@@ -72,6 +87,38 @@
             
             spans.forEach((span, i) => { span.style.animationDelay = `${i * 0.1}s`; });
 
+            
+            const loaderDiv = document.getElementById('sunburst-preloader');
+            const particlesContainer = document.createElement('div');
+            particlesContainer.id = 'particles';
+            particlesContainer.style.position = 'absolute';
+            particlesContainer.style.inset = '0';
+            loaderDiv.appendChild(particlesContainer);
+
+            for(let i = 0; i < 50; i++) {
+                let p = document.createElement('div');
+                p.className = 'ambient-particle';
+                let size = Math.random() * 8 + 4;
+                p.style.width = size + 'px';
+                p.style.height = size + 'px';
+                p.style.left = Math.random() * 100 + 'vw';
+                p.style.animationDuration = (Math.random() * 5 + 4) + 's';
+                p.style.animationDelay = Math.random() * 3 + 's';
+                particlesContainer.appendChild(p);
+            }
+            for(let i = 0; i < 4; i++) {
+                let orb = document.createElement('div');
+                orb.className = 'glowing-orb';
+                let size = Math.random() * 300 + 200;
+                orb.style.width = size + 'px';
+                orb.style.height = size + 'px';
+                orb.style.left = (Math.random() * 80) + 'vw';
+                orb.style.top = (Math.random() * 80) + 'vh';
+                orb.style.animationDelay = Math.random() * 5 + 's';
+                orb.style.animationDuration = (Math.random() * 10 + 10) + 's';
+                loaderDiv.appendChild(orb);
+            }
+
             setTimeout(() => {
                 preloader.classList.add('hidden');
                 document.body.classList.remove('is-loading');
@@ -79,7 +126,7 @@
                     preloader.style.display = 'none'; 
                     document.body.classList.add('preloader-finished');
                 }, 1200);
-            }, 3000);
+            }, 3800);
         });
     </script>
 </body>
