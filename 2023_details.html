@@ -215,10 +215,10 @@
             backdrop-filter: blur(5px);
         }
 
-        /* 2023 Sci-Fi/Starlight Preloader */
+        /* 2023 Romantic Pink Preloader */
         #stellar-preloader {
             position: fixed; inset: 0;
-            background: radial-gradient(circle at center, #0f152b 0%, #03040a 100%);
+            background: linear-gradient(135deg, #a29bfe, #fd79a8);
             z-index: 9999999; display: flex; justify-content: center; align-items: center; flex-direction: column;
             transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1), visibility 1.2s; overflow: hidden;
         }
@@ -226,38 +226,41 @@
 
         .preloader-content { text-align: center; position: relative; z-index: 10; }
 
-        .constellation { margin-bottom: 50px; display: flex; justify-content: center; position: relative; width: 100px; height: 100px; }
-        .orbit-ring { position: absolute; inset: 0; border: 2px dashed rgba(137, 247, 254, 0.5); border-radius: 50%; animation: spinRight 6s linear infinite; }
-        .orbit-ring.reverse { width: 140px; height: 140px; top: -20px; left: -20px; border: 1px solid rgba(102, 166, 255, 0.3); animation: spinLeft 8s linear infinite; }
+        .constellation { margin-bottom: 50px; display: flex; justify-content: center; position: relative; width: 120px; height: 120px; align-items: center; }
         
-        .core-star { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 20px; height: 20px; background: #89f7fe; border-radius: 50%; box-shadow: 0 0 30px #89f7fe, 0 0 60px #66a6ff; animation: pulseStar 1.5s infinite alternate; }
-
-        @keyframes spinRight { 100% { transform: rotate(360deg); } }
-        @keyframes spinLeft { 100% { transform: rotate(-360deg); } }
-        @keyframes pulseStar { 0% { transform: translate(-50%, -50%) scale(0.8); } 100% { transform: translate(-50%, -50%) scale(1.3); } }
-
-        .loading-text { font-family: 'Dancing Script', cursive; font-size: 3.5rem; color: #89f7fe; letter-spacing: 4px; margin-bottom: 30px; display: flex; justify-content: center; }
-        .loading-text span { display: inline-block; opacity: 0; transform: scale(0.5); animation: popInStar 2s forwards, starGlow 2s infinite alternate; }
+        .orbit-ring { position: absolute; width: 100%; height: 100%; border: 3px solid rgba(255, 255, 255, 0.5); border-radius: 50%; opacity: 0; animation: ringPulse 2s cubic-bezier(0.2, 0.8, 0.2, 1) infinite; }
+        .orbit-ring.reverse { animation-delay: 1s; border-color: rgba(255, 204, 229, 0.7); }
         
-        @keyframes popInStar { 50% { opacity: 1; transform: scale(1.2); } 100% { opacity: 1; transform: scale(1); } }
-        @keyframes starGlow { from { text-shadow: 0 0 10px rgba(137, 247, 254, 0.2); } to { text-shadow: 0 0 25px #fff, 0 0 40px #89f7fe; color: #fff; } }
+        .core-star { width: 60px; height: 60px; background: #fff; transform: rotate(45deg); border-radius: 50% 50% 0 50%; box-shadow: 0 0 40px #fff, 0 0 80px #fd79a8; position: relative; animation: thumpPulse 1s infinite alternate; }
+        .core-star::before, .core-star::after { content: ''; position: absolute; width: 60px; height: 60px; background: #fff; border-radius: 50%; }
+        .core-star::before { top: -30px; left: 0; }
+        .core-star::after { top: 0; left: 30px; border-radius: 50% 50% 50% 0; }
 
-        .laser-box { width: 320px; height: 2px; background: rgba(255, 255, 255, 0.05); margin: 0 auto; position: relative; overflow: hidden; box-shadow: 0 0 10px rgba(137, 247, 254, 0.2); }
-        .laser-beam { height: 100%; width: 0%; background: #89f7fe; animation: laserProgress 3.5s cubic-bezier(0.1, 0.8, 0.3, 1) forwards; box-shadow: 0 0 20px #89f7fe; }
-        .loading-subtext { font-family: 'Montserrat', sans-serif; font-size: 1rem; color: rgba(137, 247, 254, 0.8); margin-top: 25px; letter-spacing: 3px; text-transform: uppercase; animation: pulseSubtext 2s infinite; }
+        @keyframes ringPulse { 0% { transform: scale(0.5); opacity: 1; border-width: 5px; } 100% { transform: scale(2); opacity: 0; border-width: 1px; } }
+        @keyframes thumpPulse { 0% { transform: rotate(45deg) scale(0.9); } 100% { transform: rotate(45deg) scale(1.2); } }
+
+        .loading-text { font-family: 'Dancing Script', cursive; font-size: 3.5rem; color: #fff; letter-spacing: 4px; margin-bottom: 30px; display: flex; justify-content: center; }
+        .loading-text span { display: inline-block; opacity: 0; transform: translateY(20px); animation: popInStar 2s forwards, starGlow 2s infinite alternate; }
+        
+        @keyframes popInStar { 50% { opacity: 1; transform: translateY(0); } 100% { opacity: 1; transform: translateY(0); } }
+        @keyframes starGlow { from { text-shadow: 0 0 10px rgba(255,255,255,0.4); } to { text-shadow: 0 0 30px #fff; } }
+
+        .laser-box { width: 320px; height: 4px; background: rgba(255, 255, 255, 0.2); margin: 0 auto; position: relative; overflow: hidden; border-radius: 10px; }
+        .laser-beam { height: 100%; width: 0%; background: #fff; animation: laserProgress 3.5s cubic-bezier(0.1, 0.8, 0.3, 1) forwards; box-shadow: 0 0 20px #fff; }
+        .loading-subtext { font-family: 'Montserrat', sans-serif; font-size: 1rem; color: #fff; margin-top: 25px; letter-spacing: 3px; text-transform: uppercase; animation: pulseSubtext 2s infinite; font-weight: bold; }
 
         @keyframes laserProgress { 0% { width: 0%; } 20% { width: 15%; } 50% { width: 60%; } 80% { width: 85%; } 100% { width: 100%; } }
-        @keyframes pulseSubtext { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; text-shadow: 0 0 15px rgba(137,247,254,0.5); } }
+        @keyframes pulseSubtext { 0%, 100% { opacity: 0.7; } 50% { opacity: 1; text-shadow: 0 0 15px rgba(255,255,255,0.8); } }
 
-        .shooting-star { position: absolute; width: 100px; height: 2px; background: linear-gradient(90deg, transparent, #fff); transform: rotate(-45deg); opacity: 0; animation: shootStar 3s linear infinite; pointer-events: none; }
-        @keyframes shootStar { 0% { transform: translateX(100vw) translateY(-100vh) rotate(-45deg); opacity: 1; } 100% { transform: translateX(-100vw) translateY(100vh) rotate(-45deg); opacity: 0; } }
+        .shooting-star { position: absolute; width: 40px; height: 40px; font-size: 2.5rem; opacity: 0; animation: floatUpRose 4s linear infinite; pointer-events: none; }
+        @keyframes floatUpRose { 0% { transform: translateY(100vh) rotate(0deg) scale(0.5); opacity: 1; } 100% { transform: translateY(-10vh) rotate(360deg) scale(1.2); opacity: 0; } }
 
         body.is-loading { overflow: hidden; height: 100vh; }
     </style>
 </head>
 <body>
 
-    <!-- Stellar Preloader -->
+    <!-- Romantic Pink Preloader -->
     <div id="stellar-preloader">
         <div class="preloader-content">
             <div class="constellation">
@@ -266,14 +269,21 @@
                 <div class="core-star"></div>
             </div>
             <div class="loading-text">
-                <span>2</span><span>0</span><span>2</span><span>3</span><span>&nbsp;</span><span>A</span><span>w</span><span>a</span><span>i</span><span>t</span><span>s</span><span>.</span><span>.</span><span>.</span>
+                <span>2</span><span>0</span><span>2</span><span>3</span><span>&nbsp;</span><span>L</span><span>o</span><span>v</span><span>e</span><span>.</span><span>.</span><span>.</span>
             </div>
             <div class="laser-box">
                 <div class="laser-beam"></div>
             </div>
-            <div class="loading-subtext">Calibrating memories...</div>
+            <div class="loading-subtext">Awakening romance...</div>
         </div>
-        <div id="stars-container"></div>
+        <!-- Using stars-container purely for floating rose elements -->
+        <div id="stars-container">
+            <div class="shooting-star" style="left: 10%; animation-delay: 0s;">💖</div>
+            <div class="shooting-star" style="left: 30%; animation-delay: 1.5s;">🌺</div>
+            <div class="shooting-star" style="left: 50%; animation-delay: 0.5s;">💝</div>
+            <div class="shooting-star" style="left: 70%; animation-delay: 2s;">💕</div>
+            <div class="shooting-star" style="left: 90%; animation-delay: 1s;">🌹</div>
+        </div>
     </div>
 
     <div id="liquid-container"></div>
@@ -465,4 +475,3 @@
     </script>
 </body>
 </html>
-
