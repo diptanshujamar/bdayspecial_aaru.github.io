@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 16: Finding You</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Montserrat:wght@400;600&family=Playfair+Display:ital,wght@1,600&display=swap" rel="stylesheet">
+    <style>
+        body { margin: 0; min-height: 100vh; overflow: hidden; background: linear-gradient(135deg, #2c3e50, #bdc3c7); color: #fff; font-family: 'Montserrat', sans-serif; display: flex; align-items: center; justify-content: center; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: background 3s ease, filter 3s ease; }
+        
+        body.found-mode { background: linear-gradient(135deg, #ff9a9e, #fecfef); color: #2d3436; }
+        body.found-mode .narration { text-shadow: 0 5px 15px rgba(255,255,255,0.6); }
+
+        #page-entrance-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #ffffff; z-index: 9999999; animation: fadeOutWhite 1.5s cubic-bezier(0.4, 0, 0.2, 1) forwards; pointer-events: none; }
+        @keyframes fadeOutWhite { 0% { opacity: 1; } 100% { opacity: 0; visibility: hidden; } }
+
+        /* Crowd noise */
+        .crowd { position: fixed; inset: 0; background: transparent; z-index: 1; pointer-events: none; opacity: 0; transition: opacity 2s ease; }
+        body.crowd-active .crowd { opacity: 1; }
+        body.found-mode .crowd { opacity: 0 !important; }
+        .crowd-person { position: absolute; font-size: 2rem; filter: blur(3px) opacity(0.5); animation: walkAround 8s infinite alternate ease-in-out; }
+        @keyframes walkAround { 0% { transform: translateX(-50px) translateY(10px); } 100% { transform: translateX(50px) translateY(-10px); } }
+
+        /* The Focal Point (Her) */
+        .focal-point { position: fixed; top: 30%; left: 50%; transform: translate(-50%, -50%) scale(0); font-size: 10rem; opacity: 0; z-index: 2; pointer-events: none; transition: all 2s cubic-bezier(0.175, 0.885, 0.32, 1.275); filter: drop-shadow(0 0 30px rgba(255,255,255,1)); }
+        body.found-mode .focal-point { transform: translate(-50%, -50%) scale(1); opacity: 0.3; }
+
+        .story-container { width: 90%; max-width: 800px; height: 75vh; position: relative; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; z-index: 10; perspective: 1000px; }
+        .story-item { position: absolute; width: 100%; text-align: center; opacity: 0; transform: translateY(50px) scale(0.9); transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1); will-change: transform, opacity; }
+        
+        .story-item.active { opacity: 1; transform: translateY(0) scale(1); }
+        .story-item.level-1 { transform: translateY(-140px) scale(0.95); opacity: 0.9; filter: blur(0px); }
+        .story-item.level-2 { transform: translateY(-280px) scale(0.9); opacity: 0.6; filter: blur(1px); }
+        .story-item.level-3 { transform: translateY(-420px) scale(0.8); opacity: 0.3; filter: blur(3px); }
+        .story-item.level-4 { transform: translateY(-560px) scale(0.7); opacity: 0; display: none; }
+
+        .narration { font-family: 'Playfair Display', serif; font-size: 1.9rem; line-height: 1.6; text-shadow: 0 5px 15px rgba(0,0,0,0.5); font-weight: bold; transition: color 3s ease; }
+        .highlight { font-family: 'Dancing Script', cursive; font-size: 3rem; text-shadow: 0 0 20px rgba(255, 255, 255, 0.4); }
+
+        .instruction { position: absolute; bottom: 40px; font-size: 0.9rem; letter-spacing: 3px; text-transform: uppercase; color: rgba(255,255,255,0.6); animation: pulseText 2s infinite; pointer-events: none; z-index: 1000; transition: color 3s ease; }
+        body.found-mode .instruction { color: rgba(0,0,0,0.5); }
+        @keyframes pulseText { 0%, 100% { opacity: 0.3; transform: scale(1); } 50% { opacity: 1; transform: scale(1.05); } }
+
+        .btn-back { position: absolute; top: 30px; left: 30px; padding: 10px 25px; background: rgba(255, 255, 255, 0.2); color: #fff; text-decoration: none; border-radius: 50px; border: 1px solid rgba(255, 255, 255, 0.4); backdrop-filter: blur(5px); font-weight: 500; transition: all 0.3s; z-index: 100; }
+        .btn-back:hover { background: #fff; color: #2c3e50; transform: scale(1.05); box-shadow: 0 0 20px rgba(255, 255, 255, 0.5); border-color: transparent; }
+        body.found-mode .btn-back { color: #000; border-color: rgba(0,0,0,0.2); }
+        body.found-mode .btn-back:hover { background: #000; color: #ff9a9e; }
+
+        .anim-word { display: inline-block; opacity: 0; transform: scale(1.2); filter: blur(8px); animation: whisperIn 1s cubic-bezier(0.2,0.8,0.2,1) forwards; }
+        @keyframes whisperIn { to { opacity: 1; transform: scale(1); filter: blur(0); } }
+
+        /* Effects */
+        .floating-emoji { position: absolute; font-size: 3.5rem; pointer-events: none; z-index: 9999; animation: floatUpEmoji 3s ease-in forwards; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5)); }
+        @keyframes floatUpEmoji { 0% { transform: translate(-50%, 0) scale(0); opacity: 1; } 100% { transform: translate(calc(-50% + var(--randX)), -60vh) scale(1.5) rotate(var(--randRot)); opacity: 0; } }
+
+    </style>
+</head>
+<body>
+    <div id="page-entrance-overlay"></div>
+    <div class="crowd" id="crowd"></div>
+    <div class="focal-point">✨👩🏻✨</div>
+
+    <a href="2023_details.html" class="btn-back">← Back to Moments</a>
+
+    <div class="story-container" id="story-container"></div>
+    <div class="instruction" id="instruction">Tap anywhere to reveal...</div>
+
+    <script>
+        // Generate vague crowd blobs
+        const crowdBox = document.getElementById('crowd');
+        for(let i=0; i<40; i++) {
+            let person = document.createElement('div');
+            person.className = 'crowd-person';
+            person.innerText = ['👤', '👥', '🚶‍♂️', '🚶‍♀️', '🎒'][Math.floor(Math.random()*5)];
+            person.style.left = (Math.random() * window.innerWidth) + 'px';
+            person.style.top = (Math.random() * window.innerHeight) + 'px';
+            person.style.animationDelay = (Math.random() * 5) + 's';
+            person.style.animationDuration = (5 + Math.random() * 5) + 's';
+            crowdBox.appendChild(person);
+        }
+
+        const storyLines = [
+            { type: 'narration', html: "The next day of our board exams arrived... 🏫" },
+            { type: 'narration', html: "And this was the exact moment where honestly, even I was completely amazed by myself. 🤯" },
+            { type: 'narration', html: "You hadn't told me what your next classroom was going to be." },
+            { type: 'narration', html: "We were spread so far apart. My exam room was all the way down on the ground floor. 🏢⬇️" },
+            { type: 'narration', html: "And yours... yours was all the way up on the 4th floor. 🏢⬆️" },
+            { type: 'narration', html: "There were literally thousands of students rushing around everywhere. 🎒👟", effect: 'crowd' },
+            { type: 'narration', html: "Chaos. Complete noise. People everywhere." },
+            { type: 'narration', html: "But somehow..." },
+            { type: 'narration', html: "Somehow, out of absolutely nowhere, amidst 1000 people in that massive crowd..." },
+            { type: 'narration', html: "My eyes flawlessly found exactly where you were. ✨👁️", effect: 'found' },
+            { type: 'narration', html: "It's like gravity just pulled my vision straight to you in an instant. 🌠" },
+            { type: 'narration', html: "<span class='highlight' style='color:#ff0844; font-size: 3.5rem; line-height: 1.2; display:inline-block; margin-top:10px;'>Like my heart already knew the coordinates.</span> ❤️" },
+            { type: 'narration', html: "I immediately ran all the way up to the 4th floor just to wish you 'Best of luck' all over again! 🏃‍♂️💨", effect: 'run' },
+            { type: 'narration', html: "But right after that, you strictly warned me *not* to meet you inside the exam center anymore. 😅🚫", effect: 'warn' },
+            { type: 'narration', html: "So, respecting your words... I never went to your exam room after that day. 🤐" },
+            { type: 'narration', html: "<span class='highlight' style='font-size:4rem; margin-top:20px; display:inline-block;'>Finding You.</span>", effect: 'end' }
+        ];
+
+        let currentIndex = 0;
+        let isAnimating = false;
+        const container = document.getElementById('story-container');
+        const instruction = document.getElementById('instruction');
+
+        function showNextLine() {
+            if (currentIndex >= storyLines.length || isAnimating) return;
+            isAnimating = true;
+
+            const lineData = storyLines[currentIndex];
+
+            const existingLines = container.querySelectorAll('.story-item');
+            existingLines.forEach(line => {
+                let lvl = parseInt(line.getAttribute('data-level') || 0);
+                lvl++;
+                line.setAttribute('data-level', lvl);
+                line.className = `story-item level-${lvl}`;
+            });
+
+            const el = document.createElement('div');
+            el.className = 'story-item active';
+            el.setAttribute('data-level', '0');
+            el.innerHTML = `<div class="narration">${lineData.html}</div>`;
+            container.appendChild(el);
+
+            const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null, false);
+            const textNodes = [];
+            let node;
+            while(node = walker.nextNode()) {
+                if(node.nodeValue.trim() !== '') textNodes.push(node);
+            }
+            
+            let wordIndex = 0;
+            textNodes.forEach(textNode => {
+                const text = textNode.nodeValue;
+                const fragment = document.createDocumentFragment();
+                const words = text.split(/(\s+)/); 
+                words.forEach(w => {
+                    if (w.match(/^\s+$/)) {
+                        fragment.appendChild(document.createTextNode(w));
+                    } else if(w.length > 0) {
+                        const span = document.createElement('span');
+                        span.className = 'anim-word';
+                        span.innerHTML = w;
+                        span.style.animationDelay = (wordIndex * 150) + 'ms';
+                        fragment.appendChild(span);
+                        wordIndex++;
+                    }
+                });
+                textNode.parentNode.replaceChild(fragment, textNode);
+            });
+
+            setTimeout(() => { isAnimating = false; }, (wordIndex * 150) + 600);
+
+            if (lineData.effect === 'crowd') {
+                document.body.classList.add('crowd-active');
+            }
+            if (lineData.effect === 'found') {
+                document.body.classList.add('found-mode');
+                triggerEmojiBurst(['✨', '❤️', '😳', '🥺', '💞'], 25);
+            }
+            if (lineData.effect === 'run') triggerEmojiBurst(['🏃‍♂️', '💨', '🪜'], 10);
+            if (lineData.effect === 'warn') triggerEmojiBurst(['😅', '🚫', '⚠️'], 8);
+            if (lineData.effect === 'end') addNextChapterLink();
+
+            currentIndex++;
+            if (currentIndex >= storyLines.length) {
+                instruction.innerText = "Out of thousands... ✨";
+                instruction.style.animation = "none";
+                instruction.style.opacity = "1";
+            }
+        }
+
+        document.body.addEventListener('click', (e) => {
+            if (e.target.closest('a')) return;
+            createRipple(e.clientX, e.clientY);
+            showNextLine();
+        });
+
+        setTimeout(showNextLine, 1000);
+
+        function createRipple(x, y) {
+            const ripple = document.createElement('div');
+            ripple.style.position = 'absolute';
+            ripple.style.left = x + 'px';
+            ripple.style.top = y + 'px';
+            ripple.style.width = '10px';
+            ripple.style.height = '10px';
+            ripple.style.background = 'rgba(255,255,255,0.7)';
+            if(document.body.classList.contains('found-mode')) ripple.style.background = 'rgba(0,0,0,0.2)';
+            ripple.style.borderRadius = '50%';
+            ripple.style.transform = 'translate(-50%, -50%)';
+            ripple.style.pointerEvents = 'none';
+            ripple.style.animation = 'rippleOut 0.8s ease-out forwards';
+            document.body.appendChild(ripple);
+            setTimeout(() => ripple.remove(), 800);
+        }
+
+        const rippleStyle = document.createElement('style');
+        rippleStyle.innerHTML = `@keyframes rippleOut { 0% { transform: translate(-50%, -50%) scale(0); opacity: 1; } 100% { transform: translate(-50%, -50%) scale(20); opacity: 0; } }`;
+        document.head.appendChild(rippleStyle);
+
+        function triggerEmojiBurst(icons, count) {
+            for(let i=0; i<count; i++) {
+                setTimeout(() => {
+                    const emoji = document.createElement('div');
+                    emoji.className = 'floating-emoji';
+                    emoji.innerText = icons[Math.floor(Math.random() * icons.length)];
+                    emoji.style.left = (window.innerWidth / 2) + 'px';
+                    emoji.style.top = (window.innerHeight - 50) + 'px';
+                    emoji.style.setProperty('--randX', ((Math.random() - 0.5) * 600) + 'px');
+                    emoji.style.setProperty('--randRot', ((Math.random() - 0.5) * 360) + 'deg');
+                    emoji.style.animation = 'floatUpEmoji 3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards';
+                    document.body.appendChild(emoji);
+                    setTimeout(() => emoji.remove(), 3000);
+                }, i * (1500/count));
+            }
+        }
+
+        function addNextChapterLink() {
+            setTimeout(() => {
+                const linkContainer = document.createElement('div');
+                linkContainer.className = 'story-item active';
+                linkContainer.setAttribute('data-level', '0');
+                linkContainer.style.marginTop = "40px";
+                linkContainer.style.textAlign = "center";
+                linkContainer.style.width = "100%";
+                
+                const nextBtn = document.createElement('a');
+                nextBtn.href = "2023_moment17.html";
+                nextBtn.innerHTML = "Continue the Story →";
+                nextBtn.style.display = "inline-block";
+                nextBtn.style.padding = "20px 40px";
+                nextBtn.style.background = "linear-gradient(45deg, #000, #333)";
+                nextBtn.style.color = "#ff9a9e";
+                nextBtn.style.textDecoration = "none";
+                nextBtn.style.borderRadius = "50px";
+                nextBtn.style.fontFamily = "'Montserrat', sans-serif";
+                nextBtn.style.fontWeight = "bold";
+                nextBtn.style.fontSize = "1.4rem";
+                nextBtn.style.boxShadow = "0 10px 30px rgba(0, 0, 0, 0.4)";
+                nextBtn.style.transition = "all 0.3s";
+                nextBtn.style.border = "1px solid rgba(0,0,0,0.2)";
+                nextBtn.style.animation = "pulseText 2s infinite";
+                nextBtn.style.pointerEvents = "auto";
+                
+                nextBtn.onmouseover = () => { nextBtn.style.transform = "scale(1.1)"; nextBtn.style.color = "#fff"; };
+                nextBtn.onmouseout = () => { nextBtn.style.transform = "scale(1)"; nextBtn.style.color = "#ff9a9e"; };
+
+                linkContainer.appendChild(nextBtn);
+                container.appendChild(linkContainer);
+                
+                const existingLines = container.querySelectorAll('.story-item:not(:last-child)');
+                existingLines.forEach(line => {
+                    let lvl = parseInt(line.getAttribute('data-level') || 0);
+                    lvl++;
+                    line.setAttribute('data-level', lvl);
+                    line.className = `story-item level-${lvl}`;
+                });
+                
+                instruction.style.display = 'none';
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

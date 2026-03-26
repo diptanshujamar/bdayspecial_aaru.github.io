@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The 2023 Details</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Montserrat:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #89f7fe;
+            --secondary-color: #66a6ff;
+            --text-dark: #192a56;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Montserrat', sans-serif;
+            color: var(--text-dark);
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        .header {
+            text-align: center;
+            padding: 60px 20px 20px;
+            opacity: 0;
+            animation: fadeInDown 1.2s ease forwards;
+            animation-play-state: paused;
+        }
+        body.preloader-finished .header {
+            animation-play-state: running;
+        }
+
+        .header h1 {
+            font-family: 'Dancing Script', cursive;
+            font-size: 4.5rem;
+            color: #273c75;
+            margin: 0 0 10px 0;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: #718093;
+            margin: 0;
+        }
+
+        .columns-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            max-width: 1400px;
+            margin: 40px auto;
+            padding: 0 40px;
+            flex-grow: 1;
+        }
+
+        .col-card {
+            background: rgba(255, 255, 255, 0.85);
+            border-radius: 20px;
+            padding: 40px 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+            border-top: 5px solid var(--primary-color);
+            display: flex;
+            flex-direction: column;
+            min-height: 380px;
+            opacity: 0;
+            animation-duration: 1.2s;
+            animation-fill-mode: forwards;
+            animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+            animation-play-state: paused;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease, background 0.4s ease;
+        }
+
+        body.preloader-finished .col-card {
+            animation-play-state: running;
+        }
+
+        .col-card:nth-child(1) { border-top-color: #0f2027; animation-name: floatingInUp; animation-delay: 0.1s; }
+        .col-card:nth-child(2) { border-top-color: #25D366; animation-name: floatingInUp; animation-delay: 0.3s; }
+        .col-card:nth-child(3) { border-top-color: #ff4757; animation-name: floatingInUp; animation-delay: 0.5s; }
+        .col-card:nth-child(4) { border-top-color: #ffafbd; animation-name: floatingInUp; animation-delay: 0.7s; }
+        .col-card:nth-child(5) { border-top-color: #4e4376; animation-name: floatingInUp; animation-delay: 0.9s; }
+        .col-card:nth-child(6) { border-top-color: #89f7fe; animation-name: floatingInUp; animation-delay: 1.1s; }
+        .col-card:nth-child(7) { border-top-color: #ff9a9e; animation-name: floatingInUp; animation-delay: 1.3s; }
+        .col-card:nth-child(8) { border-top-color: #243b55; animation-name: floatingInUp; animation-delay: 1.5s; }
+        .col-card:nth-child(9) { border-top-color: #434343; animation-name: floatingInUp; animation-delay: 1.7s; }
+        .col-card:nth-child(10) { border-top-color: #f1c40f; animation-name: floatingInUp; animation-delay: 1.9s; }
+        .col-card:nth-child(11) { border-top-color: #8e44ad; animation-name: floatingInUp; animation-delay: 2.1s; }
+
+        @keyframes floatingInUp { from { opacity: 0; transform: translateY(100px) scale(0.9); } to { opacity: 1; transform: translateY(0) scale(1); } }
+
+        .col-card:hover {
+            transform: translateY(-15px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(102, 166, 255, 0.3);
+            background: white;
+        }
+
+        .col-number {
+            font-family: 'Dancing Script', cursive;
+            font-size: 4rem;
+            color: var(--primary-color);
+            opacity: 0.3;
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            transition: opacity 0.3s ease;
+        }
+        .col-card:hover .col-number { opacity: 0.8; }
+
+        .col-card h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #273c75;
+            margin-top: 30px;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .col-card p {
+            line-height: 1.7;
+            color: #555;
+            font-size: 1.05rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .btn-read-more {
+            display: inline-block;
+            margin-top: auto;
+            align-self: center;
+            padding: 12px 25px;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: #fff;
+            text-decoration: none;
+            border-radius: 30px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            text-align: center;
+            transition: 0.3s;
+            box-shadow: 0 5px 15px rgba(102, 166, 255, 0.4);
+            position: relative;
+            z-index: 3;
+            width: 80%;
+        }
+
+        .btn-read-more:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(102, 166, 255, 0.7);
+            color: white;
+        }
+
+        @media (min-width: 1024px) {
+            .columns-container { position: relative; }
+            .columns-container::before {
+                content: '';
+                position: absolute;
+                top: 30px; bottom: 30px; left: 50%;
+                width: 2px;
+                background: linear-gradient(180deg, transparent, var(--primary-color), transparent);
+                z-index: -1;
+                opacity: 0.3;
+            }
+        }
+
+        @media (max-width: 1024px) { .columns-container { grid-template-columns: repeat(2, 1fr); } .columns-container::before { display: none; } }
+        @media (max-width: 600px) { .columns-container { grid-template-columns: 1fr; } }
+
+        .footer {
+            text-align: center;
+            padding: 40px;
+            margin-top: 20px;
+            opacity: 0;
+            animation: fadeInDown 0.8s forwards;
+            animation-delay: 1.2s;
+            animation-play-state: paused;
+        }
+        body.preloader-finished .footer { animation-play-state: running; }
+
+        .btn-back {
+            display: inline-block;
+            padding: 15px 40px;
+            background: var(--primary-color);
+            color: #192a56;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            transition: 0.3s;
+            box-shadow: 0 4px 15px rgba(102, 166, 255, 0.4);
+            font-size: 1.1rem;
+        }
+
+        .btn-back:hover { background: #66a6ff; color: #fff; box-shadow: 0 6px 20px rgba(102, 166, 255, 0.6); transform: scale(1.05); }
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Liquid Transition Container */
+        #liquid-container {
+            position: fixed; inset: 0; pointer-events: none; z-index: 99999; display: none; overflow: hidden;
+        }
+        .ripple-circle {
+            position: absolute; border-radius: 50%; border: 3px solid #89f7fe;
+            background: radial-gradient(circle, rgba(137, 247, 254, 0.2), rgba(102, 166, 255, 0.8));
+            transform: translate(-50%, -50%) scale(0); opacity: 0;
+            transition: transform 1.2s cubic-bezier(0.5, 0, 0.2, 1), opacity 0.3s ease;
+            box-shadow: inset 0 0 50px #89f7fe;
+            backdrop-filter: blur(5px);
+        }
+
+        /* 2023 Sci-Fi/Starlight Preloader */
+        #stellar-preloader {
+            position: fixed; inset: 0;
+            background: radial-gradient(circle at center, #0f152b 0%, #03040a 100%);
+            z-index: 9999999; display: flex; justify-content: center; align-items: center; flex-direction: column;
+            transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1), visibility 1.2s; overflow: hidden;
+        }
+        #stellar-preloader.hidden { opacity: 0; visibility: hidden; }
+
+        .preloader-content { text-align: center; position: relative; z-index: 10; }
+
+        .constellation { margin-bottom: 50px; display: flex; justify-content: center; position: relative; width: 100px; height: 100px; }
+        .orbit-ring { position: absolute; inset: 0; border: 2px dashed rgba(137, 247, 254, 0.5); border-radius: 50%; animation: spinRight 6s linear infinite; }
+        .orbit-ring.reverse { width: 140px; height: 140px; top: -20px; left: -20px; border: 1px solid rgba(102, 166, 255, 0.3); animation: spinLeft 8s linear infinite; }
+        
+        .core-star { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 20px; height: 20px; background: #89f7fe; border-radius: 50%; box-shadow: 0 0 30px #89f7fe, 0 0 60px #66a6ff; animation: pulseStar 1.5s infinite alternate; }
+
+        @keyframes spinRight { 100% { transform: rotate(360deg); } }
+        @keyframes spinLeft { 100% { transform: rotate(-360deg); } }
+        @keyframes pulseStar { 0% { transform: translate(-50%, -50%) scale(0.8); } 100% { transform: translate(-50%, -50%) scale(1.3); } }
+
+        .loading-text { font-family: 'Dancing Script', cursive; font-size: 3.5rem; color: #89f7fe; letter-spacing: 4px; margin-bottom: 30px; display: flex; justify-content: center; }
+        .loading-text span { display: inline-block; opacity: 0; transform: scale(0.5); animation: popInStar 2s forwards, starGlow 2s infinite alternate; }
+        
+        @keyframes popInStar { 50% { opacity: 1; transform: scale(1.2); } 100% { opacity: 1; transform: scale(1); } }
+        @keyframes starGlow { from { text-shadow: 0 0 10px rgba(137, 247, 254, 0.2); } to { text-shadow: 0 0 25px #fff, 0 0 40px #89f7fe; color: #fff; } }
+
+        .laser-box { width: 320px; height: 2px; background: rgba(255, 255, 255, 0.05); margin: 0 auto; position: relative; overflow: hidden; box-shadow: 0 0 10px rgba(137, 247, 254, 0.2); }
+        .laser-beam { height: 100%; width: 0%; background: #89f7fe; animation: laserProgress 3.5s cubic-bezier(0.1, 0.8, 0.3, 1) forwards; box-shadow: 0 0 20px #89f7fe; }
+        .loading-subtext { font-family: 'Montserrat', sans-serif; font-size: 1rem; color: rgba(137, 247, 254, 0.8); margin-top: 25px; letter-spacing: 3px; text-transform: uppercase; animation: pulseSubtext 2s infinite; }
+
+        @keyframes laserProgress { 0% { width: 0%; } 20% { width: 15%; } 50% { width: 60%; } 80% { width: 85%; } 100% { width: 100%; } }
+        @keyframes pulseSubtext { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; text-shadow: 0 0 15px rgba(137,247,254,0.5); } }
+
+        .shooting-star { position: absolute; width: 100px; height: 2px; background: linear-gradient(90deg, transparent, #fff); transform: rotate(-45deg); opacity: 0; animation: shootStar 3s linear infinite; pointer-events: none; }
+        @keyframes shootStar { 0% { transform: translateX(100vw) translateY(-100vh) rotate(-45deg); opacity: 1; } 100% { transform: translateX(-100vw) translateY(100vh) rotate(-45deg); opacity: 0; } }
+
+        body.is-loading { overflow: hidden; height: 100vh; }
+    </style>
+</head>
+<body>
+
+    <!-- Stellar Preloader -->
+    <div id="stellar-preloader">
+        <div class="preloader-content">
+            <div class="constellation">
+                <div class="orbit-ring reverse"></div>
+                <div class="orbit-ring"></div>
+                <div class="core-star"></div>
+            </div>
+            <div class="loading-text">
+                <span>2</span><span>0</span><span>2</span><span>3</span><span>&nbsp;</span><span>A</span><span>w</span><span>a</span><span>i</span><span>t</span><span>s</span><span>.</span><span>.</span><span>.</span>
+            </div>
+            <div class="laser-box">
+                <div class="laser-beam"></div>
+            </div>
+            <div class="loading-subtext">Calibrating memories...</div>
+        </div>
+        <div id="stars-container"></div>
+    </div>
+
+    <div id="liquid-container"></div>
+
+    <div class="header">
+        <h1>2023 Moments</h1>
+        <p>A new year, a beautifully different chapter...</p>
+    </div>
+
+    <div class="columns-container">
+        <!-- Column 10 -->
+        <div class="col-card">
+            <div class="col-number">10</div>
+            <h2>The First Touch</h2>
+            <p>New Year's Eve. While you were giving your wishes, I held your unbelievably soft hand for the first time. I was so stunned and nervous, I just wished you again and practically ran to class.</p>
+            <a href="2023_moment10.html" class="btn-read-more">Experience the Moment</a>
+        </div>
+
+        <!-- Column 11 -->
+        <div class="col-card">
+            <div class="col-number">11</div>
+            <h2>(This Message Was Deleted)</h2>
+            <p>Starting the year on WhatsApp. So many nervous texts typed and deleted. January flew by with exams, bringing us right to the thrilling doorstep of Valentine's month.</p>
+            <a href="2023_moment11.html" class="btn-read-more">Experience the Moment</a>
+        </div>
+
+        <!-- Column 12 -->
+        <div class="col-card">
+            <div class="col-number">12</div>
+            <h2>Rose Day Madness</h2>
+            <p>February 7th. Boldly giving you a rose-shaped chocolate right in front of the teacher. You accepted it with the unforgettable line: "Dost hi sahi, rose toh mila!"</p>
+            <a href="2023_moment12.html" class="btn-read-more">Experience the Moment</a>
+        </div>
+
+        <!-- Column 13 -->
+        <div class="col-card">
+            <div class="col-number">13</div>
+            <h2>Valentine's Week</h2>
+            <p>From teasing about a "secret admirer" to diabetes warnings over chocolates! Then a magical tiny glass teddy bear, the Valentine's pause, and the looming 10th-grade board exams.</p>
+            <a href="2023_moment13.html" class="btn-read-more">Experience the Moment</a>
+        </div>
+
+        <!-- Column 14 -->
+        <div class="col-card">
+            <div class="col-number">14</div>
+            <h2>The Farewell Gift</h2>
+            <p>Forcing you to attend the farewell just to give you a bracelet. Putting it on your wrist with trembling hands so you'd always remember "Ki itna pyaar karne wala bhi banda tha".</p>
+            <a href="2023_moment14.html" class="btn-read-more">Experience the Moment</a>
+        </div>
+
+        <!-- Column 15 -->
+        <div class="col-card">
+            <div class="col-number">15</div>
+            <h2>The 1 AM Confession</h2>
+            <p>February 27th. You kept calling me "bro", so I finally confessed my love at 1 AM! The next morning, knocking on your exam center window just to say "All the best".</p>
+            <a href="2023_moment15.html" class="btn-read-more">Experience the Moment</a>
+        </div>
+
+        <!-- Column 16 -->
+        <div class="col-card">
+            <div class="col-number">16</div>
+            <h2>Finding You</h2>
+            <p>The next exam day. You didn't tell me your room, and you were on the 4th floor while I was on the ground. Yet, out of thousands, my eyes still flawlessly found you.</p>
+            <a href="2023_moment16.html" class="btn-read-more">Experience the Moment</a>
+        </div>
+
+        <!-- Column 17 -->
+        <div class="col-card">
+            <div class="col-number">17</div>
+            <h2>The First Heartbreak</h2>
+            <p>During the IT exam break. A simple sentence "Dost rehna hai toh reh" broke my heart for the first time. I cried in the other room, but my love proved stronger than my sadness.</p>
+            <a href="2023_moment17.html" class="btn-read-more">Experience the Moment</a>
+        </div>
+
+        <!-- Column 18 -->
+        <div class="col-card">
+            <div class="col-number">18</div>
+            <h2>The Unspoken Ring</h2>
+            <p>The last exam day. Seeing you beautifully in your school dress, I wanted to confess with a ring. But you stayed with friends, leaving me to accept the fate of never seeing you again.</p>
+            <a href="2023_moment18.html" class="btn-read-more">Experience the Moment</a>
+        </div>
+
+        <!-- Column 19 -->
+        <div class="col-card">
+            <div class="col-number">19</div>
+            <h2>The Snapchat Deactivation</h2>
+            <p>We started chatting on Snapchat, sharing our daily lives and getting comfortable. But when I pushed too hard for you to accept me, it ruined everything. Then came the sudden message: "Deactivating for 1 month," leaving me fearing you were tired of me.</p>
+            <a href="2023_moment19.html" class="btn-read-more">Experience the Moment</a>
+        </div>
+
+        <!-- Column 20 -->
+        <div class="col-card">
+            <div class="col-number">20</div>
+            <h2>The Long Gap & Om</h2>
+            <p>I finally gave up to heal myself and started my JEE journey while you began NEET. Our common friend Om Kamthe told me you shared a tuition. For 3-4 silent months, getting your updates through him was my only survival mechanism.</p>
+            <a href="2023_moment20.html" class="btn-read-more">Experience the Moment</a>
+        </div>
+    </div>
+
+    <div class="footer">
+        <a href="index.html" class="btn-back">← Back to Eras</a>
+    </div>
+
+    <script>
+        document.body.classList.add('is-loading');
+        
+        document.addEventListener("DOMContentLoaded", () => {
+            const preloader = document.getElementById('stellar-preloader');
+            const starsContainer = document.getElementById('stars-container');
+            const spans = document.querySelectorAll('.loading-text span');
+            
+            spans.forEach((span, i) => { span.style.animationDelay = `${i * 0.15}s, ${i * 0.15 + 2}s`; });
+
+            // Shooting stars bg
+            for(let i=0; i<8; i++) {
+                let s = document.createElement('div');
+                s.className = 'shooting-star';
+                s.style.top = (Math.random() * 50) + 'vh';
+                s.style.left = (Math.random() * 100) + 'vw';
+                s.style.animationDelay = (Math.random() * 4) + 's';
+                starsContainer.appendChild(s);
+            }
+
+            setTimeout(() => {
+                preloader.classList.add('hidden');
+                document.body.classList.remove('is-loading');
+                document.body.classList.add('preloader-finished');
+                setTimeout(() => { preloader.style.display = 'none'; }, 1200);
+            }, 3800);
+        });
+
+        // The exciting "Liquid Ripple" Transition!
+        function rippleTransition(targetUrl, e) {
+            const container = document.getElementById('liquid-container');
+            container.style.display = 'block';
+
+            let x = e.clientX;
+            let y = e.clientY;
+
+            // Generate circular ripple exactly from the mouse click coordinates!
+            const ripple = document.createElement('div');
+            ripple.className = 'ripple-circle';
+            ripple.style.width = '100px'; 
+            ripple.style.height = '100px';
+            ripple.style.left = x + 'px';
+            ripple.style.top = y + 'px';
+            container.appendChild(ripple);
+
+            // Start animation
+            setTimeout(() => {
+                ripple.style.opacity = '1';
+                ripple.style.transform = 'translate(-50%, -50%) scale(50)';
+            }, 50);
+
+            // Cover screen entirely to avoid seeing underlying page jumps
+            let whiteOut = document.createElement('div');
+            whiteOut.style.position = 'absolute'; whiteOut.style.inset = '0';
+            whiteOut.style.background = '#fff'; whiteOut.style.opacity = '0';
+            whiteOut.style.transition = 'opacity 0.5s ease 0.6s';
+            container.appendChild(whiteOut);
+
+            setTimeout(() => { whiteOut.style.opacity = '1'; }, 50);
+
+            setTimeout(() => { window.location.href = targetUrl; }, 1100);
+        }
+
+        document.querySelectorAll('.btn-read-more').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                rippleTransition(this.getAttribute('href'), e);
+            });
+        });
+    </script>
+</body>
+</html>

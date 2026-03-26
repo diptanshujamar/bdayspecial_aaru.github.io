@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 6: Finding Every Way to Talk</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Montserrat:wght@400;600&family=Playfair+Display:ital,wght@1,600&display=swap" rel="stylesheet">
+    <style>
+        body { margin: 0; min-height: 100vh; overflow: hidden; background: linear-gradient(135deg, #0f0c29, #302b63, #24243e); background-size: 400% 400%; animation: gradientBG 15s ease infinite; color: #fff; font-family: 'Montserrat', sans-serif; display: flex; align-items: center; justify-content: center; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+        @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+
+        #page-entrance-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #ffffff; z-index: 9999999; animation: fadeOutWhite 1.5s cubic-bezier(0.4, 0, 0.2, 1) forwards; pointer-events: none; }
+        @keyframes fadeOutWhite { 0% { opacity: 1; } 100% { opacity: 0; visibility: hidden; } }
+
+        .story-container { width: 90%; max-width: 800px; height: 75vh; position: relative; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; z-index: 10; perspective: 1000px; }
+        .story-item { position: absolute; width: 100%; text-align: center; opacity: 0; transform: translateY(50px) scale(0.9); transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1); will-change: transform, opacity; }
+        
+        .story-item.active { opacity: 1; transform: translateY(0) scale(1); }
+        .story-item.level-1 { transform: translateY(-140px) scale(0.95); opacity: 0.8; filter: blur(0px); }
+        .story-item.level-2 { transform: translateY(-280px) scale(0.9); opacity: 0.5; filter: blur(1px); }
+        .story-item.level-3 { transform: translateY(-420px) scale(0.8); opacity: 0.2; filter: blur(3px); }
+        .story-item.level-4 { transform: translateY(-560px) scale(0.7); opacity: 0; display: none; }
+
+        .narration { font-family: 'Playfair Display', serif; font-size: 1.8rem; line-height: 1.6; color: #f8f8f8; text-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+        .highlight { font-family: 'Dancing Script', cursive; color: #f6d365; font-size: 3rem; text-shadow: 0 0 20px rgba(246, 211, 101, 0.8); }
+
+        .instruction { position: absolute; bottom: 40px; font-size: 0.9rem; letter-spacing: 3px; text-transform: uppercase; color: rgba(255,255,255,0.6); animation: pulseText 2s infinite; pointer-events: none; z-index: 1000; }
+        @keyframes pulseText { 0%, 100% { opacity: 0.3; transform: scale(1); } 50% { opacity: 0.8; transform: scale(1.05); } }
+
+        .btn-back { position: absolute; top: 30px; left: 30px; padding: 10px 25px; background: rgba(255, 255, 255, 0.1); color: white; text-decoration: none; border-radius: 50px; border: 1px solid rgba(255, 255, 255, 0.2); backdrop-filter: blur(5px); font-weight: 500; transition: all 0.3s; z-index: 100; }
+        .btn-back:hover { background: #f6d365; color: #333; transform: scale(1.05); box-shadow: 0 0 20px rgba(246, 211, 101, 0.6); border-color: transparent; }
+
+        .anim-word { display: inline-block; opacity: 0; transform: scale(1.2); filter: blur(8px); animation: whisperIn 1s cubic-bezier(0.2,0.8,0.2,1) forwards; }
+        @keyframes whisperIn { to { opacity: 1; transform: scale(1); filter: blur(0); } }
+
+        .bg-glow { position: fixed; inset: 0; background: radial-gradient(circle at center, rgba(255,77,109,0.3) 0%, transparent 70%); opacity: 0; pointer-events: none; z-index: 1; transition: opacity 3s ease; }
+        body.love-bloom .bg-glow { opacity: 1; }
+
+        .floating-emoji { position: absolute; font-size: 3rem; pointer-events: none; z-index: 9999; animation: floatUp 3s ease-in forwards; }
+        @keyframes floatUp { 0% { transform: translate(-50%, 0) scale(0); opacity: 1; } 100% { transform: translate(calc(-50% + var(--randX)), -50vh) scale(1.5); opacity: 0; } }
+
+        .sparkle-burst { position: absolute; width: 8px; height: 8px; background: #fff; border-radius: 50%; box-shadow: 0 0 15px #fff, 0 0 30px #f6d365; pointer-events: none; animation: burstOut 1s cubic-bezier(0.1, 0.8, 0.3, 1) forwards; }
+        @keyframes burstOut { 0% { transform: scale(0) translate(0, 0); opacity: 1; } 100% { transform: scale(1.5) translate(var(--tx), var(--ty)); opacity: 0; } }
+
+    </style>
+</head>
+<body>
+    <div id="page-entrance-overlay"></div>
+    <div class="bg-glow" id="bg-glow"></div>
+
+    <a href="2022_details.html" class="btn-back">← Back to Moments</a>
+
+    <div class="story-container" id="story-container"></div>
+    <div class="instruction" id="instruction">Tap anywhere to reveal...</div>
+
+    <script>
+        const storyLines = [
+            { type: 'narration', html: "The absolute silence of the examination room... 🤫" },
+            { type: 'narration', html: "You were seated all the way back in the 3rd row, on the 3rd bench." },
+            { type: 'narration', html: "And I was trapped right at the front... on the very first bench." },
+            { type: 'narration', html: "The physical distance between us felt massive, but I was determined. 📏", effect: 'distance' },
+            { type: 'narration', html: "I was finding <span class='highlight' style='color:#f6d365'>absolutely every single way</span> just to talk to you." },
+            { type: 'narration', html: "Every single day we were having exams, I would never leave a chance to say 'All the best' and motivate you. ✨", effect: 'sparkle' },
+            { type: 'narration', html: "Even during the paper itself, I was just quietly admiring you... I just kept looking at you." },
+            { type: 'narration', html: "But the moment you gave me a look back, I would instantly take off my eyes! 🙈", effect: 'excuse' },
+            { type: 'narration', html: "Because honestly... you were such a <span class='highlight' style='color:#ff4d6d'>baddie</span> and purely sigma in those days. 😎" },
+            { type: 'narration', html: "I was so intimidated, I couldn't even make eye contact with you!" },
+            { type: 'narration', html: "Those exam days were honestly... so, so good. 💖" },
+            { type: 'narration', html: "And it was right there, amidst the impossible distances..." },
+            { type: 'narration', html: "That a beautiful, secret, <span class='highlight' style='color:#ff4d6d'>one-sided love</span> quietly blossomed from my side. 🌹", effect: 'bloom' },
+            { type: 'narration', html: "<span class='highlight' style='font-size:3.5rem; margin-top:20px; display:inline-block;'>The Beginning.</span>", effect: 'end' }
+        ];
+
+        let currentIndex = 0;
+        let isAnimating = false;
+        const container = document.getElementById('story-container');
+        const instruction = document.getElementById('instruction');
+
+        function showNextLine() {
+            if (currentIndex >= storyLines.length || isAnimating) return;
+            isAnimating = true;
+
+            const lineData = storyLines[currentIndex];
+
+            const existingLines = container.querySelectorAll('.story-item');
+            existingLines.forEach(line => {
+                let lvl = parseInt(line.getAttribute('data-level') || 0);
+                lvl++;
+                line.setAttribute('data-level', lvl);
+                line.className = `story-item level-${lvl}`;
+            });
+
+            const el = document.createElement('div');
+            el.className = 'story-item active';
+            el.setAttribute('data-level', '0');
+            el.innerHTML = `<div class="narration">${lineData.html}</div>`;
+            container.appendChild(el);
+
+            const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null, false);
+            const textNodes = [];
+            let node;
+            while(node = walker.nextNode()) {
+                if(node.nodeValue.trim() !== '') textNodes.push(node);
+            }
+            
+            let wordIndex = 0;
+            textNodes.forEach(textNode => {
+                const text = textNode.nodeValue;
+                const fragment = document.createDocumentFragment();
+                const words = text.split(/(\s+)/); 
+                words.forEach(w => {
+                    if (w.match(/^\s+$/)) {
+                        fragment.appendChild(document.createTextNode(w));
+                    } else if(w.length > 0) {
+                        const span = document.createElement('span');
+                        span.className = 'anim-word';
+                        span.innerHTML = w;
+                        span.style.animationDelay = (wordIndex * 150) + 'ms';
+                        fragment.appendChild(span);
+                        wordIndex++;
+                    }
+                });
+                textNode.parentNode.replaceChild(fragment, textNode);
+            });
+
+            setTimeout(() => { isAnimating = false; }, (wordIndex * 150) + 600);
+
+            if (lineData.effect === 'excuse') triggerExcuse();
+            if (lineData.effect === 'sparkle') triggerSparkles();
+            if (lineData.effect === 'bloom') triggerBloom();
+            if (lineData.effect === 'end') addNextChapterLink();
+
+            currentIndex++;
+            if (currentIndex >= storyLines.length) {
+                instruction.innerText = "The birth of a one-sided love... ❤️";
+                instruction.style.animation = "none";
+                instruction.style.opacity = "1";
+            }
+        }
+
+        document.body.addEventListener('click', (e) => {
+            if (e.target.closest('a')) return;
+            createRipple(e.clientX, e.clientY);
+            showNextLine();
+        });
+
+        setTimeout(showNextLine, 1000);
+
+        function createRipple(x, y) {
+            const ripple = document.createElement('div');
+            ripple.style.position = 'absolute';
+            ripple.style.left = x + 'px';
+            ripple.style.top = y + 'px';
+            ripple.style.width = '10px';
+            ripple.style.height = '10px';
+            ripple.style.background = 'rgba(255,255,255,0.5)';
+            ripple.style.borderRadius = '50%';
+            ripple.style.transform = 'translate(-50%, -50%)';
+            ripple.style.pointerEvents = 'none';
+            ripple.style.animation = 'rippleOut 0.8s ease-out forwards';
+            document.body.appendChild(ripple);
+            setTimeout(() => ripple.remove(), 800);
+        }
+
+        const rippleStyle = document.createElement('style');
+        rippleStyle.innerHTML = `@keyframes rippleOut { 0% { transform: translate(-50%, -50%) scale(0); opacity: 1; } 100% { transform: translate(-50%, -50%) scale(15); opacity: 0; } }`;
+        document.head.appendChild(rippleStyle);
+
+        function triggerExcuse() {
+            for(let i=0; i<8; i++) {
+                setTimeout(() => {
+                    const emoji = document.createElement('div');
+                    emoji.className = 'floating-emoji';
+                    const icons = ['👀', '🤫', '🙈', '📝'];
+                    emoji.innerText = icons[Math.floor(Math.random() * icons.length)];
+                    emoji.style.left = (window.innerWidth / 2) + 'px';
+                    emoji.style.top = (window.innerHeight - 100) + 'px';
+                    emoji.style.setProperty('--randX', ((Math.random() - 0.5) * 500) + 'px');
+                    document.body.appendChild(emoji);
+                    setTimeout(() => emoji.remove(), 3000);
+                }, i * 200);
+            }
+        }
+
+        function triggerSparkles() {
+            for(let i=0; i<40; i++) {
+                setTimeout(() => {
+                    const spark = document.createElement('div');
+                    spark.className = 'sparkle-burst';
+                    spark.style.left = Math.random() * window.innerWidth + 'px';
+                    spark.style.top = Math.random() * window.innerHeight + 'px';
+                    spark.style.setProperty('--tx', ((Math.random() - 0.5) * 300) + 'px');
+                    spark.style.setProperty('--ty', ((Math.random() - 0.5) * 300) + 'px');
+                    document.body.appendChild(spark);
+                    setTimeout(() => spark.remove(), 1000);
+                }, i * 30);
+            }
+        }
+
+        function triggerBloom() {
+            document.body.classList.add('love-bloom');
+            for(let i=0; i<15; i++) {
+                setTimeout(() => {
+                    const emoji = document.createElement('div');
+                    emoji.className = 'floating-emoji';
+                    emoji.innerText = '🌹';
+                    emoji.style.left = (Math.random() * window.innerWidth) + 'px';
+                    emoji.style.top = '-50px';
+                    emoji.style.setProperty('--randX', ((Math.random() - 0.5) * 200) + 'px');
+                    emoji.style.animation = 'floatDown 5s ease-in forwards';
+                    document.body.appendChild(emoji);
+                    setTimeout(() => emoji.remove(), 5000);
+                }, i * 300);
+            }
+        }
+
+        const downStyle = document.createElement('style');
+        downStyle.innerHTML = `@keyframes floatDown { 0% { transform: translate(-50%, 0) scale(1) rotate(0deg); opacity: 1; } 100% { transform: translate(calc(-50% + var(--randX)), 120vh) scale(1.5) rotate(360deg); opacity: 0; } }`;
+        document.head.appendChild(downStyle);
+
+        function addNextChapterLink() {
+            setTimeout(() => {
+                const linkContainer = document.createElement('div');
+                linkContainer.className = 'story-item active';
+                linkContainer.setAttribute('data-level', '0');
+                linkContainer.style.marginTop = "40px";
+                linkContainer.style.textAlign = "center";
+                linkContainer.style.width = "100%";
+                
+                const nextBtn = document.createElement('a');
+                nextBtn.href = "2022_moment7.html";
+                nextBtn.innerHTML = "Continue the Story →";
+                nextBtn.style.display = "inline-block";
+                nextBtn.style.padding = "20px 40px";
+                nextBtn.style.background = "linear-gradient(45deg, #f6d365, #fda085)";
+                nextBtn.style.color = "#111";
+                nextBtn.style.textDecoration = "none";
+                nextBtn.style.borderRadius = "50px";
+                nextBtn.style.fontFamily = "'Montserrat', sans-serif";
+                nextBtn.style.fontWeight = "600";
+                nextBtn.style.fontSize = "1.3rem";
+                nextBtn.style.boxShadow = "0 10px 30px rgba(246, 211, 101, 0.4)";
+                nextBtn.style.transition = "all 0.3s";
+                nextBtn.style.animation = "pulseText 2s infinite";
+                nextBtn.style.pointerEvents = "auto";
+                
+                nextBtn.onmouseover = () => { nextBtn.style.transform = "scale(1.1)"; };
+                nextBtn.onmouseout = () => { nextBtn.style.transform = "scale(1)"; };
+
+                linkContainer.appendChild(nextBtn);
+                container.appendChild(linkContainer);
+                
+                const existingLines = container.querySelectorAll('.story-item:not(:last-child)');
+                existingLines.forEach(line => {
+                    let lvl = parseInt(line.getAttribute('data-level') || 0);
+                    lvl++;
+                    line.setAttribute('data-level', lvl);
+                    line.className = `story-item level-${lvl}`;
+                });
+                
+                instruction.style.display = 'none';
+            }, 2000);
+        }
+    </script>
+</body>
+</html>

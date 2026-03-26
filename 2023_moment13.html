@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 13: Valentine's Week</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Montserrat:wght@400;600&family=Playfair+Display:ital,wght@1,600&display=swap" rel="stylesheet">
+    <style>
+        body { margin: 0; min-height: 100vh; overflow: hidden; background: linear-gradient(135deg, #ffc3a0, #ffafbd); color: #fff; font-family: 'Montserrat', sans-serif; display: flex; align-items: center; justify-content: center; cursor: pointer; -webkit-tap-highlight-color: transparent; transition: background 2s ease, filter 2s ease; }
+        
+        body.exam-mode { background: linear-gradient(135deg, #a18cd1, #fbc2eb); }
+
+        #page-entrance-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #ffffff; z-index: 9999999; animation: fadeOutWhite 1.5s cubic-bezier(0.4, 0, 0.2, 1) forwards; pointer-events: none; }
+        @keyframes fadeOutWhite { 0% { opacity: 1; } 100% { opacity: 0; visibility: hidden; } }
+
+        /* Floating stars layer for glass teddy */
+        .glass-stars { position: fixed; inset: 0; overflow: hidden; z-index: 1; pointer-events: none; opacity: 0; transition: opacity 1.5s ease; }
+        body.stars-active .glass-stars { opacity: 1; }
+        .shiny-star { position: absolute; border-radius: 50%; width: 4px; height: 4px; background: #fff; box-shadow: 0 0 10px #f6d365, 0 0 20px #f6d365; animation: twinkleFloat 4s ease-in-out infinite alternate; }
+        @keyframes twinkleFloat { 0% { transform: translateY(0px) scale(0.8); opacity: 0.5; } 100% { transform: translateY(-50px) scale(1.5); opacity: 1; } }
+
+        .story-container { width: 90%; max-width: 800px; height: 75vh; position: relative; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; z-index: 10; perspective: 1000px; }
+        .story-item { position: absolute; width: 100%; text-align: center; opacity: 0; transform: translateY(50px) scale(0.9); transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1); will-change: transform, opacity; }
+        
+        .story-item.active { opacity: 1; transform: translateY(0) scale(1); }
+        .story-item.level-1 { transform: translateY(-140px) scale(0.95); opacity: 0.9; filter: blur(0px); }
+        .story-item.level-2 { transform: translateY(-280px) scale(0.9); opacity: 0.6; filter: blur(1px); }
+        .story-item.level-3 { transform: translateY(-420px) scale(0.8); opacity: 0.3; filter: blur(3px); }
+        .story-item.level-4 { transform: translateY(-560px) scale(0.7); opacity: 0; display: none; }
+
+        .narration { font-family: 'Playfair Display', serif; font-size: 1.9rem; line-height: 1.6; text-shadow: 0 5px 15px rgba(0,0,0,0.4); font-weight: bold; }
+        .highlight { font-family: 'Dancing Script', cursive; font-size: 3rem; text-shadow: 0 0 20px rgba(255, 255, 255, 0.6); }
+
+        .instruction { position: absolute; bottom: 40px; font-size: 0.9rem; letter-spacing: 3px; text-transform: uppercase; color: rgba(255,255,255,0.8); animation: pulseText 2s infinite; pointer-events: none; z-index: 1000; }
+        @keyframes pulseText { 0%, 100% { opacity: 0.4; transform: scale(1); } 50% { opacity: 1; transform: scale(1.05); } }
+
+        .btn-back { position: absolute; top: 30px; left: 30px; padding: 10px 25px; background: rgba(255, 255, 255, 0.2); color: #fff; text-decoration: none; border-radius: 50px; border: 1px solid rgba(255, 255, 255, 0.4); backdrop-filter: blur(5px); font-weight: 500; transition: all 0.3s; z-index: 100; }
+        .btn-back:hover { background: #fff; color: #ff0844; transform: scale(1.05); box-shadow: 0 0 20px rgba(255, 255, 255, 0.5); border-color: transparent; }
+
+        .anim-word { display: inline-block; opacity: 0; transform: scale(1.2); filter: blur(8px); animation: whisperIn 1s cubic-bezier(0.2,0.8,0.2,1) forwards; }
+        @keyframes whisperIn { to { opacity: 1; transform: scale(1); filter: blur(0); } }
+
+        /* Effects */
+        .floating-emoji { position: absolute; font-size: 3.5rem; pointer-events: none; z-index: 9999; animation: floatUpEmoji 3s ease-in forwards; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5)); }
+        @keyframes floatUpEmoji { 0% { transform: translate(-50%, 0) scale(0); opacity: 1; } 100% { transform: translate(calc(-50% + var(--randX)), -60vh) scale(1.5) rotate(var(--randRot)); opacity: 0; } }
+        
+        .falling-emoji { position: absolute; font-size: 3rem; pointer-events: none; z-index: 9999; animation: dropDownEmoji 2.5s ease-in forwards; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5)); }
+        @keyframes dropDownEmoji { 0% { transform: translate(var(--randX), -10vh) scale(0) rotate(0deg); opacity: 1; } 100% { transform: translate(var(--randX), 110vh) scale(1.5) rotate(var(--randRot)); opacity: 0; } }
+
+    </style>
+</head>
+<body>
+    <div id="page-entrance-overlay"></div>
+    <div class="glass-stars" id="glitter"></div>
+
+    <a href="2023_details.html" class="btn-back">← Back to Moments</a>
+
+    <div class="story-container" id="story-container"></div>
+    <div class="instruction" id="instruction">Tap anywhere to reveal...</div>
+
+    <script>
+        // Generate stars for teddy bottle
+        const glitterBox = document.getElementById('glitter');
+        for(let i=0; i<60; i++) {
+            let star = document.createElement('div');
+            star.className = 'shiny-star';
+            star.style.left = (Math.random() * window.innerWidth) + 'px';
+            star.style.top = (Math.random() * window.innerHeight) + 'px';
+            star.style.animationDelay = (Math.random() * 4) + 's';
+            glitterBox.appendChild(star);
+        }
+
+        const storyLines = [
+            { type: 'narration', html: "After you said 'Dost hi sahi, rose toh mila' on that brilliant Rose Day..." },
+            { type: 'narration', html: "I casually teased you back.", effect: 'smirk' },
+            { type: 'narration', html: "I said: <span class='highlight' style='color:#a1c4fd; font-size:3rem; line-height: 1.1; display:inline-block; margin-top:10px;'>'Nahi nahi, koi toh hoga chahne wala...'</span> 😏" },
+            { type: 'narration', html: "Little did you know, that secret admirer was entirely, purely just me... madly in love with you. ❤️" },
+            { type: 'narration', html: "Then came February 8th. Propose Day. 💍" },
+            { type: 'narration', html: "I didn't officially propose anything wild... but I did bring you another chocolate. 🍫" },
+            { type: 'narration', html: "You looked at me and practically warned me:" },
+            { type: 'narration', html: "<span class='highlight' style='color:#ff0844; font-size:3rem; line-height: 1.2; display:inline-block; margin-top:10px;'>'Mujhe tum diabetes karaonge!'</span> 😂🩺", effect: 'diabetes' },
+            { type: 'narration', html: "Because I was literally giving you that much chocolate every single day. 😅" },
+            { type: 'narration', html: "February 9th... Chocolate Day. And yes, obviously, I gave you even more chocolate. 🍫😂", effect: 'moreChoc' },
+            { type: 'narration', html: "Then came February 10th. Teddy Day. 🧸" },
+            { type: 'narration', html: "I didn't give you a massive teddy bear. But I bought this tiny, precious teddy keychain..." },
+            { type: 'narration', html: "It was a tiny teddy trapped inside a beautiful small glass bottle, absolutely full of glitters and stars. ✨", effect: 'stars' },
+            { type: 'narration', html: "After that... from the 11th until the 14th..." },
+            { type: 'narration', html: "I didn't give you anything else. 🤐" },
+            { type: 'narration', html: "Because honestly, I hadn't confessed my love to you yet." },
+            { type: 'narration', html: "And besides... there was a massive storm looming over us. ⛈️", effect: 'examMode' },
+            { type: 'narration', html: "Starting February 28th, our 10th-grade board exams were going to begin. 📚📝", effect: 'books' },
+            { type: 'narration', html: "<span class='highlight' style='font-size:3.5rem; margin-top:20px; display:inline-block; color:#fff;'>Love & Exams.</span>", effect: 'end' }
+        ];
+
+        let currentIndex = 0;
+        let isAnimating = false;
+        const container = document.getElementById('story-container');
+        const instruction = document.getElementById('instruction');
+
+        function showNextLine() {
+            if (currentIndex >= storyLines.length || isAnimating) return;
+            isAnimating = true;
+
+            const lineData = storyLines[currentIndex];
+
+            const existingLines = container.querySelectorAll('.story-item');
+            existingLines.forEach(line => {
+                let lvl = parseInt(line.getAttribute('data-level') || 0);
+                lvl++;
+                line.setAttribute('data-level', lvl);
+                line.className = `story-item level-${lvl}`;
+            });
+
+            const el = document.createElement('div');
+            el.className = 'story-item active';
+            el.setAttribute('data-level', '0');
+            el.innerHTML = `<div class="narration">${lineData.html}</div>`;
+            container.appendChild(el);
+
+            const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null, false);
+            const textNodes = [];
+            let node;
+            while(node = walker.nextNode()) {
+                if(node.nodeValue.trim() !== '') textNodes.push(node);
+            }
+            
+            let wordIndex = 0;
+            textNodes.forEach(textNode => {
+                const text = textNode.nodeValue;
+                const fragment = document.createDocumentFragment();
+                const words = text.split(/(\s+)/); 
+                words.forEach(w => {
+                    if (w.match(/^\s+$/)) {
+                        fragment.appendChild(document.createTextNode(w));
+                    } else if(w.length > 0) {
+                        const span = document.createElement('span');
+                        span.className = 'anim-word';
+                        span.innerHTML = w;
+                        span.style.animationDelay = (wordIndex * 150) + 'ms';
+                        fragment.appendChild(span);
+                        wordIndex++;
+                    }
+                });
+                textNode.parentNode.replaceChild(fragment, textNode);
+            });
+
+            setTimeout(() => { isAnimating = false; }, (wordIndex * 150) + 600);
+
+            if (lineData.effect === 'smirk') triggerEmojiBurst(['😏', '✨', '💖'], 6);
+            if (lineData.effect === 'diabetes') triggerEmojiFalling(['🍫', '🩺', '🚑', '😂'], 20);
+            if (lineData.effect === 'moreChoc') triggerEmojiFalling(['🍫', '🥰', '🍫'], 15);
+            if (lineData.effect === 'stars') {
+                document.body.classList.add('stars-active');
+                triggerEmojiBurst(['🧸', '✨', '✨'], 15);
+            }
+            if (lineData.effect === 'examMode') {
+                document.body.classList.add('exam-mode');
+                document.body.classList.remove('stars-active');
+            }
+            if (lineData.effect === 'books') triggerEmojiFalling(['📚', '📝', '⏳', '🧠'], 25);
+            if (lineData.effect === 'end') addNextChapterLink();
+
+            currentIndex++;
+            if (currentIndex >= storyLines.length) {
+                instruction.innerText = "Between hearts and books... 📚❤️";
+                instruction.style.animation = "none";
+                instruction.style.opacity = "1";
+            }
+        }
+
+        document.body.addEventListener('click', (e) => {
+            if (e.target.closest('a')) return;
+            createRipple(e.clientX, e.clientY);
+            showNextLine();
+        });
+
+        setTimeout(showNextLine, 1000);
+
+        function createRipple(x, y) {
+            const ripple = document.createElement('div');
+            ripple.style.position = 'absolute';
+            ripple.style.left = x + 'px';
+            ripple.style.top = y + 'px';
+            ripple.style.width = '10px';
+            ripple.style.height = '10px';
+            ripple.style.background = 'rgba(255,255,255,0.7)';
+            ripple.style.borderRadius = '50%';
+            ripple.style.transform = 'translate(-50%, -50%)';
+            ripple.style.pointerEvents = 'none';
+            ripple.style.animation = 'rippleOut 0.8s ease-out forwards';
+            document.body.appendChild(ripple);
+            setTimeout(() => ripple.remove(), 800);
+        }
+
+        const rippleStyle = document.createElement('style');
+        rippleStyle.innerHTML = `@keyframes rippleOut { 0% { transform: translate(-50%, -50%) scale(0); opacity: 1; } 100% { transform: translate(-50%, -50%) scale(20); opacity: 0; } }`;
+        document.head.appendChild(rippleStyle);
+
+        function triggerEmojiBurst(icons, count) {
+            for(let i=0; i<count; i++) {
+                setTimeout(() => {
+                    const emoji = document.createElement('div');
+                    emoji.className = 'floating-emoji';
+                    emoji.innerText = icons[Math.floor(Math.random() * icons.length)];
+                    emoji.style.left = (window.innerWidth / 2) + 'px';
+                    emoji.style.top = (window.innerHeight - 50) + 'px';
+                    emoji.style.setProperty('--randX', ((Math.random() - 0.5) * 600) + 'px');
+                    emoji.style.setProperty('--randRot', ((Math.random() - 0.5) * 360) + 'deg');
+                    emoji.style.animation = 'floatUpEmoji 3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards';
+                    document.body.appendChild(emoji);
+                    setTimeout(() => emoji.remove(), 3000);
+                }, i * (1500/count));
+            }
+        }
+
+        // New Drop Down Effect
+        function triggerEmojiFalling(icons, count) {
+            for(let i=0; i<count; i++) {
+                setTimeout(() => {
+                    const emoji = document.createElement('div');
+                    emoji.className = 'falling-emoji';
+                    emoji.innerText = icons[Math.floor(Math.random() * icons.length)];
+                    emoji.style.left = '50%';
+                    emoji.style.setProperty('--randX', ((Math.random() - 0.5) * 800) + 'px');
+                    emoji.style.setProperty('--randRot', ((Math.random() - 0.5) * 720) + 'deg');
+                    emoji.style.animation = 'dropDownEmoji 2.5s cubic-bezier(0.5, 0, 0.8, 0.5) forwards';
+                    document.body.appendChild(emoji);
+                    setTimeout(() => emoji.remove(), 3000);
+                }, i * (2000/count));
+            }
+        }
+
+        function addNextChapterLink() {
+            setTimeout(() => {
+                const linkContainer = document.createElement('div');
+                linkContainer.className = 'story-item active';
+                linkContainer.setAttribute('data-level', '0');
+                linkContainer.style.marginTop = "40px";
+                linkContainer.style.textAlign = "center";
+                linkContainer.style.width = "100%";
+                
+                const nextBtn = document.createElement('a');
+                nextBtn.href = "2023_moment14.html";
+                nextBtn.innerHTML = "Continue the Story →";
+                nextBtn.style.display = "inline-block";
+                nextBtn.style.padding = "20px 40px";
+                nextBtn.style.background = "linear-gradient(45deg, #fff, #a18cd1)";
+                nextBtn.style.color = "#4c328e";
+                nextBtn.style.textDecoration = "none";
+                nextBtn.style.borderRadius = "50px";
+                nextBtn.style.fontFamily = "'Montserrat', sans-serif";
+                nextBtn.style.fontWeight = "bold";
+                nextBtn.style.fontSize = "1.4rem";
+                nextBtn.style.boxShadow = "0 10px 30px rgba(255, 255, 255, 0.7)";
+                nextBtn.style.transition = "all 0.3s";
+                nextBtn.style.border = "1px solid rgba(255,255,255,0.2)";
+                nextBtn.style.animation = "pulseText 2s infinite";
+                nextBtn.style.pointerEvents = "auto";
+                
+                nextBtn.onmouseover = () => { nextBtn.style.transform = "scale(1.1)"; };
+                nextBtn.onmouseout = () => { nextBtn.style.transform = "scale(1)"; };
+
+                linkContainer.appendChild(nextBtn);
+                container.appendChild(linkContainer);
+                
+                const existingLines = container.querySelectorAll('.story-item:not(:last-child)');
+                existingLines.forEach(line => {
+                    let lvl = parseInt(line.getAttribute('data-level') || 0);
+                    lvl++;
+                    line.setAttribute('data-level', lvl);
+                    line.className = `story-item level-${lvl}`;
+                });
+                
+                instruction.style.display = 'none';
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

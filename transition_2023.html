@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transition to 2023</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Montserrat:wght@400;600&family=Playfair+Display:ital,wght@1,600&display=swap" rel="stylesheet">
+    <style>
+        body { margin: 0; min-height: 100vh; overflow: hidden; background: #000; color: #fff; font-family: 'Montserrat', sans-serif; display: flex; align-items: center; justify-content: center; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+        
+        #page-entrance-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #ffffff; z-index: 9999999; animation: fadeOutWhite 1.6s cubic-bezier(0.4, 0, 0.2, 1) forwards; pointer-events: none; }
+        @keyframes fadeOutWhite { 0% { opacity: 1; } 100% { opacity: 0; visibility: hidden; } }
+
+        .sparkle-particle { position: fixed; border-radius: 50%; width: 4px; height: 4px; background: #fff; pointer-events: none; z-index: 1; animation: sparkleFly 2.5s cubic-bezier(0.1, 0.8, 0.3, 1) forwards; box-shadow: 0 0 10px #f8a5c2, 0 0 20px #fff; }
+        @keyframes sparkleFly { 0% { transform: translate(var(--startX), var(--startY)) scale(0); opacity: 1; } 100% { transform: translate(var(--endX), var(--endY)) scale(2); opacity: 0; } }
+
+        .text-container { position: relative; z-index: 10; text-align: center; perspective: 1000px; }
+        .line { font-family: 'Playfair Display', serif; font-size: 2.5rem; font-weight: bold; opacity: 0; transform: translateY(30px) scale(0.9); transition: all 1.5s cubic-bezier(0.2, 0.8, 0.2, 1); position: absolute; width: 100vw; left: 50%; top: 50%; transform: translate(-50%, -50%) translateY(30px); }
+        .line.active { opacity: 1; transform: translate(-50%, -50%) translateY(0) scale(1); }
+        .line.done { opacity: 0; transform: translate(-50%, -50%) translateY(-30px) scale(1.1); filter: blur(10px); }
+
+        .year-text { font-family: 'Dancing Script', cursive; font-size: 8rem; background: linear-gradient(45deg, #f6d365, #fda085, #ff0844); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0 0 40px rgba(253, 160, 133, 0.6); }
+
+        .btn-continue { position: absolute; bottom: 10vh; left: 50%; transform: translateX(-50%); padding: 15px 40px; background: transparent; color: #fda085; text-decoration: none; border-radius: 50px; border: 1px solid #fda085; font-weight: 600; font-size: 1.2rem; transition: all 0.4s; opacity: 0; pointer-events: none; box-shadow: 0 0 20px rgba(253, 160, 133, 0.2); }
+        .btn-continue.show { opacity: 1; pointer-events: auto; animation: pulseBtn 2s infinite; }
+        .btn-continue:hover { background: #fda085; color: #000; box-shadow: 0 0 40px rgba(253, 160, 133, 0.8); border-color: transparent; }
+
+        @keyframes pulseBtn { 0%, 100% { transform: translateX(-50%) scale(1); } 50% { transform: translateX(-50%) scale(1.05); } }
+
+        .instruction { position: absolute; bottom: 40px; font-size: 0.9rem; letter-spacing: 3px; text-transform: uppercase; color: rgba(255,255,255,0.4); animation: pulseText 2s infinite; pointer-events: none; z-index: 1000; transition: opacity 1s ease; }
+        @keyframes pulseText { 0%, 100% { opacity: 0.2; transform: scale(1); } 50% { opacity: 0.6; transform: scale(1.05); } }
+
+    </style>
+</head>
+<body>
+    <div id="page-entrance-overlay"></div>
+
+    <div class="text-container" id="text-container">
+        <div class="line" id="l0">And just like that...</div>
+        <div class="line" id="l1">The love carried forward...</div>
+        <div class="line" id="l2">Into the next chapter.</div>
+        <div class="line" id="l3"><span class="year-text">2023</span></div>
+    </div>
+
+    <div class="instruction" id="instruction">Tap to continue...</div>
+
+    <a href="2023_moment10.html" class="btn-continue" id="nextBtn">Step Forward →</a>
+
+    <script>
+        let currentLine = 0;
+        const totalLines = 4;
+        let isAnimating = false;
+
+        function triggerFireworks() {
+            for(let i=0; i<8; i++) {
+                setTimeout(() => {
+                    let originX = Math.random() * window.innerWidth;
+                    let originY = Math.random() * window.innerHeight * 0.8;
+                    let colors = ['#fda085', '#f6d365', '#ff0844', '#fff', '#a1c4fd'];
+                    let color = colors[Math.floor(Math.random() * colors.length)];
+                    
+                    for(let p=0; p<50; p++) {
+                        let spark = document.createElement('div');
+                        spark.className = 'sparkle-particle';
+                        spark.style.setProperty('--startX', originX + 'px');
+                        spark.style.setProperty('--startY', originY + 'px');
+                        spark.style.setProperty('--endX', (originX + (Math.sortedRandom ? Math.random() : Math.random()-0.5)*500) + 'px');
+                        spark.style.setProperty('--endY', (originY + (Math.random()-0.5)*500) + 'px');
+                        spark.style.background = color;
+                        spark.style.boxShadow = `0 0 10px ${color}, 0 0 20px ${color}`;
+                        document.body.appendChild(spark);
+                        setTimeout(() => spark.remove(), 2500);
+                    }
+                }, i * 400);
+            }
+        }
+
+        function showNext() {
+            if (isAnimating) return;
+            if (currentLine >= totalLines) return;
+            isAnimating = true;
+
+            if (currentLine > 0) {
+                document.getElementById('l' + (currentLine - 1)).classList.remove('active');
+                document.getElementById('l' + (currentLine - 1)).classList.add('done');
+            }
+
+            document.getElementById('l' + currentLine).classList.add('active');
+
+            if (currentLine === 3) {
+                document.getElementById('instruction').style.opacity = '0';
+                triggerFireworks();
+                setTimeout(() => {
+                    document.getElementById('nextBtn').classList.add('show');
+                }, 2500);
+            }
+
+            currentLine++;
+            setTimeout(() => { isAnimating = false; }, 1500);
+        }
+
+        document.body.addEventListener('click', (e) => {
+            if (e.target.closest('a')) return;
+            showNext();
+        });
+
+        setTimeout(showNext, 1000);
+    </script>
+</body>
+</html>

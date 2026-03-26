@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Eras - Timeline</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body { margin: 0; min-height: 100vh; background: #0b0f19; color: #fff; font-family: 'Montserrat', sans-serif; overflow-x: hidden; }
+
+        .header { text-align: center; padding: 80px 20px 40px; }
+        .header h1 { font-family: 'Dancing Script', cursive; font-size: 5rem; margin: 0; background: linear-gradient(45deg, #ffafbd, #ffc3a0); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 15px rgba(255,175,189,0.3)); animation: glow 2s ease-in-out infinite alternate; }
+        .header p { font-size: 1.2rem; letter-spacing: 5px; text-transform: uppercase; color: #a0a5b1; margin-top: 15px; }
+
+        @keyframes glow { 0% { filter: drop-shadow(0 0 15px rgba(255,175,189,0.3)); } 100% { filter: drop-shadow(0 0 30px rgba(255,175,189,0.7)); } }
+
+        .timeline-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 40px; max-width: 1200px; margin: 0 auto 100px; padding: 0 40px; }
+
+        .era-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 30px; padding: 60px 40px; text-align: center; text-decoration: none; position: relative; overflow: hidden; transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); cursor: pointer; }
+
+        /* The glowing auras */
+        .era-card::before { content: ''; position: absolute; inset: 0; opacity: 0; transition: opacity 0.5s ease; z-index: 0; }
+        .era-card:hover { transform: translateY(-15px) scale(1.02); box-shadow: 0 20px 40px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.3); }
+        .era-card:hover::before { opacity: 1; }
+        .era-card * { position: relative; z-index: 2; }
+
+        .year { font-size: 5rem; font-weight: 800; margin: 0 0 20px; transition: 0.5s; color: rgba(255,255,255,0.1); }
+        .era-card:hover .year { color: #fff; text-shadow: 0 0 30px rgba(255,255,255,0.8); }
+
+        .title { font-size: 1.8rem; font-family: 'Dancing Script', cursive; margin-bottom: 20px; color: #fff; }
+        .desc { font-size: 1rem; color: #a0a5b1; line-height: 1.6; }
+
+        /* Specific Era Styling */
+        .era-2022:hover::before { background: radial-gradient(circle at center, rgba(255, 175, 189, 0.2), transparent); }
+        .era-2022:hover { border-color: #ffafbd; box-shadow: 0 0 50px rgba(255,175,189,0.3); }
+
+        .era-2023:hover::before { background: radial-gradient(circle at center, rgba(161, 196, 253, 0.2), transparent); }
+        .era-2023:hover { border-color: #a1c4fd; box-shadow: 0 0 50px rgba(161,196,253,0.3); }
+
+        .era-2024:hover::before { background: radial-gradient(circle at center, rgba(246, 211, 101, 0.2), transparent); }
+        .era-2024:hover { border-color: #f6d365; box-shadow: 0 0 50px rgba(246,211,101,0.3); }
+
+        .era-2025:hover::before { background: radial-gradient(circle at center, rgba(161, 140, 209, 0.2), transparent); }
+        .era-2025:hover { border-color: #a18cd1; box-shadow: 0 0 50px rgba(161,140,209,0.3); }
+
+        /* Entry anims */
+        .era-card { opacity: 0; animation: slideUp 0.8s forwards ease-out; }
+        .era-card:nth-child(1) { animation-delay: 0.2s; }
+        .era-card:nth-child(2) { animation-delay: 0.4s; }
+        .era-card:nth-child(3) { animation-delay: 0.6s; }
+        .era-card:nth-child(4) { animation-delay: 0.8s; }
+
+        @keyframes slideUp { from { opacity: 0; transform: translateY(50px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Mobile */
+        @media (max-width: 900px) { .timeline-grid { grid-template-columns: 1fr; } }
+        
+        #page-entrance-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; z-index: 9999999; animation: fadeOutDark 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards; pointer-events: none; }
+        @keyframes fadeOutDark { 0% { opacity: 1; } 100% { opacity: 0; visibility: hidden; } }
+
+    </style>
+</head>
+<body>
+    <div id="page-entrance-overlay"></div>
+
+    <div class="header">
+        <h1>Our Eras</h1>
+        <p>A Journey Through Time</p>
+    </div>
+
+    <div class="timeline-grid">
+        <a href="2022_details.html" class="era-card era-2022">
+            <h2 class="year">2022</h2>
+            <div class="title">The Beginning</div>
+            <div class="desc">Where it all started. Tiny moments, early morning tuitions, silent fascination, and unshakeable first seeds of love.</div>
+        </a>
+
+        <a href="2023_details.html" class="era-card era-2023">
+            <h2 class="year">2023</h2>
+            <div class="title">The Board Exams & Beyond</div>
+            <div class="desc">The new year, the thrilling exam season, the first heartbreak, and the moments when love proved stronger than circumstances.</div>
+        </a>
+
+        <a href="2024_details.html" class="era-card era-2024">
+            <h2 class="year">2024</h2>
+            <div class="title">The Next Chapter</div>
+            <div class="desc">Memories waiting to be uncovered... Explore the milestones and emotions that carried forward into another beautiful year.</div>
+        </a>
+
+        <a href="2025_details.html" class="era-card era-2025">
+            <h2 class="year">2025</h2>
+            <div class="title">The Current Era</div>
+            <div class="desc">The present moments we are actively building. Love, growth, and living in our beautiful, continuous story.</div>
+        </a>
+    </div>
+</body>
+</html>

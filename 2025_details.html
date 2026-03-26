@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The 2025 Details</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Montserrat:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #a18cd1;
+            --secondary-color: #fbc2eb;
+            --text-dark: #2c2c54;
+        }
+        body { margin: 0; font-family: 'Montserrat', sans-serif; background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%); min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; }
+
+        /* 2025 Neon Hexagon Preloader */
+        #hex-preloader { position: fixed; inset: 0; background: #130f40; z-index: 9999999; display: flex; justify-content: center; align-items: center; flex-direction: column; transition: opacity 1.2s ease, visibility 1.2s; overflow: hidden; }
+        #hex-preloader.hidden { opacity: 0; visibility: hidden; }
+        
+        .hex-container { margin-bottom: 50px; position: relative; width: 120px; height: 138px; display: flex; justify-content: center; align-items: center; }
+        
+        .hexagon { position: absolute; width: 100%; height: 100%; top: 0; left: 0; border-left: 2px solid #a18cd1; border-right: 2px solid #fbc2eb; animation: hexPulse 1.5s infinite alternate; }
+        
+        /* Multiple offset hexagons */
+        .hex1 { transform: rotate(0deg); }
+        .hex2 { transform: rotate(60deg); animation-delay: 0.2s; }
+        .hex3 { transform: rotate(120deg); animation-delay: 0.4s; }
+
+        @keyframes hexPulse { 0% { filter: drop-shadow(0 0 5px #a18cd1); transform: scale(0.9); } 100% { filter: drop-shadow(0 0 20px #fbc2eb); transform: scale(1.1); } }
+
+        .hex-core { width: 40px; height: 40px; background: #fff; border-radius: 50%; box-shadow: 0 0 30px #fff, 0 0 60px #fbc2eb; z-index: 10; animation: coreGlow 1s infinite alternate; }
+        @keyframes coreGlow { from { opacity: 0.5; } to { opacity: 1; transform: scale(1.2); } }
+
+        .loading-text { font-family: 'Montserrat', sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: 12px; font-size: 2rem; color: #fff; text-shadow: 0 0 20px #a18cd1; display: flex; justify-content: center; margin-bottom: 20px; }
+        .loading-text span { opacity: 0; filter: blur(10px); transform: translateX(-30px); animation: slideScan 1s forwards; }
+        @keyframes slideScan { to { opacity: 1; filter: blur(0); transform: translateX(0); } }
+
+        /* Grid lines background */
+        .cyber-grid { position: absolute; inset: 0; background-size: 50px 50px; background-image: linear-gradient(to right, rgba(161, 140, 209, 0.1) 1px, transparent 1px), linear-gradient(to bottom, rgba(161, 140, 209, 0.1) 1px, transparent 1px); animation: panGrid 10s linear infinite; }
+        @keyframes panGrid { 100% { background-position: 50px 50px; } }
+
+        /* General page */
+        .content { flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; transform: translateY(50px); transition: 1s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        body.preloader-finished .content { opacity: 1; transform: translateY(0); }
+
+        h1 { font-family: 'Dancing Script', cursive; font-size: 5rem; color: #a18cd1; margin-bottom: 20px; text-shadow: 0 5px 15px rgba(161, 140, 209, 0.4); }
+        p { font-size: 1.2rem; color: #555; max-width: 600px; line-height: 1.6; text-align: center; }
+        
+        .btn-back { display: inline-block; padding: 15px 40px; background: #a18cd1; color: #fff; text-decoration: none; border-radius: 50px; font-weight: bold; margin-top: 40px; transition: 0.3s; box-shadow: 0 10px 20px rgba(161, 140, 209, 0.4); }
+        .btn-back:hover { transform: scale(1.05); box-shadow: 0 15px 30px rgba(161, 140, 209, 0.6); }
+
+        body.is-loading { overflow: hidden; height: 100vh; }
+    </style>
+</head>
+<body class="is-loading">
+
+    <div id="hex-preloader">
+        <div class="cyber-grid"></div>
+        <div class="hex-container">
+            <div class="hexagon hex1"></div>
+            <div class="hexagon hex2"></div>
+            <div class="hexagon hex3"></div>
+            <div class="hex-core"></div>
+        </div>
+        <div class="loading-text">
+            <span>2</span><span>0</span><span>2</span><span>5</span>
+        </div>
+    </div>
+
+    <div class="content">
+        <h1>2025 Timeline</h1>
+        <p>The current era. This is where you are living your story right now...</p>
+        <a href="index.html" class="btn-back">← Back to Eras</a>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const preloader = document.getElementById('hex-preloader');
+            const spans = document.querySelectorAll('.loading-text span');
+            
+            spans.forEach((span, i) => { span.style.animationDelay = `${i * 0.2}s`; });
+
+            setTimeout(() => {
+                preloader.classList.add('hidden');
+                document.body.classList.remove('is-loading');
+                setTimeout(() => { 
+                    preloader.style.display = 'none'; 
+                    document.body.classList.add('preloader-finished');
+                }, 1200);
+            }, 3000);
+        });
+    </script>
+</body>
+</html>

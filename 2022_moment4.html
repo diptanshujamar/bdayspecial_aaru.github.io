@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 4: The August Encounter</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Montserrat:wght@400;600&family=Playfair+Display:ital,wght@1,600&display=swap" rel="stylesheet">
+    <style>
+        body { margin: 0; min-height: 100vh; overflow: hidden; background: linear-gradient(135deg, #141e30, #243b55); color: #fff; font-family: 'Montserrat', sans-serif; display: flex; align-items: center; justify-content: center; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+        
+        #page-entrance-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #ffffff; z-index: 9999999; animation: fadeOutWhite 1.5s cubic-bezier(0.4, 0, 0.2, 1) forwards; pointer-events: none; }
+        @keyframes fadeOutWhite { 0% { opacity: 1; } 100% { opacity: 0; visibility: hidden; } }
+
+        .story-container { width: 90%; max-width: 800px; height: 75vh; position: relative; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; z-index: 10; perspective: 1000px; }
+        .story-item { position: absolute; width: 100%; text-align: center; opacity: 0; transform: translateY(50px) scale(0.9); transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1); will-change: transform, opacity; }
+        
+        .story-item.active { opacity: 1; transform: translateY(0) scale(1); }
+        .story-item.level-1 { transform: translateY(-140px) scale(0.95); opacity: 0.8; filter: blur(0px); }
+        .story-item.level-2 { transform: translateY(-280px) scale(0.9); opacity: 0.5; filter: blur(1px); }
+        .story-item.level-3 { transform: translateY(-420px) scale(0.8); opacity: 0.2; filter: blur(3px); }
+        .story-item.level-4 { transform: translateY(-560px) scale(0.7); opacity: 0; display: none; }
+
+        .narration { font-family: 'Playfair Display', serif; font-size: 1.8rem; line-height: 1.6; color: #f8f8f8; text-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+        .highlight { font-family: 'Dancing Script', cursive; color: #4facfe; font-size: 3rem; text-shadow: 0 0 20px rgba(79, 172, 254, 0.8); }
+
+        /* Chat bubbles */
+        .chat-bubble { display: inline-block; padding: 15px 25px; border-radius: 20px; font-family: 'Montserrat', sans-serif; font-size: 1.4rem; max-width: 80%; text-align: left; box-shadow: 0 10px 20px rgba(0,0,0,0.3); position: relative; }
+        .chat-container { width: 100%; display: flex; flex-direction: column; }
+        .chat-container.her { align-items: flex-start; }
+        .chat-container.her .chat-bubble { background: #fdfbfb; color: #d63031; border-bottom-left-radius: 5px; font-weight: 600; font-style: italic; border: 2px solid #ff9a9e; }
+        .speaker-name { font-size: 0.9rem; margin-bottom: 5px; opacity: 0.8; font-weight: bold; letter-spacing: 1px; }
+
+        .instruction { position: absolute; bottom: 40px; font-size: 0.9rem; letter-spacing: 3px; text-transform: uppercase; color: rgba(255,255,255,0.6); animation: pulseText 2s infinite; pointer-events: none; z-index: 1000; }
+        @keyframes pulseText { 0%, 100% { opacity: 0.3; transform: scale(1); } 50% { opacity: 0.8; transform: scale(1.05); } }
+
+        .btn-back { position: absolute; top: 30px; left: 30px; padding: 10px 25px; background: rgba(255, 255, 255, 0.1); color: white; text-decoration: none; border-radius: 50px; border: 1px solid rgba(255, 255, 255, 0.2); backdrop-filter: blur(5px); font-weight: 500; transition: all 0.3s; z-index: 100; }
+        .btn-back:hover { background: #4facfe; color: #333; transform: scale(1.05); box-shadow: 0 0 20px rgba(79, 172, 254, 0.6); border-color: transparent; }
+
+        .anim-word { display: inline-block; opacity: 0; transform: scale(1.2); filter: blur(8px); animation: whisperIn 1s cubic-bezier(0.2,0.8,0.2,1) forwards; }
+        @keyframes whisperIn { to { opacity: 1; transform: scale(1); filter: blur(0); } }
+
+        .floating-emoji { position: absolute; font-size: 3rem; pointer-events: none; z-index: 9999; animation: floatUp 3s ease-in forwards; }
+        @keyframes floatUp { 0% { transform: translate(-50%, 0) scale(0); opacity: 1; } 100% { transform: translate(calc(-50% + var(--randX)), -50vh) scale(1.5); opacity: 0; } }
+
+        .sparkle-burst { position: absolute; width: 8px; height: 8px; background: #fff; border-radius: 50%; box-shadow: 0 0 15px #fff, 0 0 30px #4facfe; pointer-events: none; animation: burstOut 1s cubic-bezier(0.1, 0.8, 0.3, 1) forwards; }
+        @keyframes burstOut { 0% { transform: scale(0) translate(0, 0); opacity: 1; } 100% { transform: scale(1.5) translate(var(--tx), var(--ty)); opacity: 0; } }
+
+    </style>
+</head>
+<body>
+    <div id="page-entrance-overlay"></div>
+
+    <a href="2022_details.html" class="btn-back">← Back to Moments</a>
+
+    <div class="story-container" id="story-container"></div>
+    <div class="instruction" id="instruction">Tap anywhere to reveal...</div>
+
+    <script>
+        const storyLines = [
+            { type: 'narration', html: "After that shift in the seating arrangement... 🍂" },
+            { type: 'narration', html: "I genuinely wasn't talking to you as much as I had hoped." },
+            { type: 'narration', html: "I was trying my best, dropping simple 'Hello's and 'Bye's whenever I could." },
+            { type: 'narration', html: "But it just wasn't enough." },
+            { type: 'narration', html: "Then came August. Everything shifted. ⏳" },
+            { type: 'narration', html: "Your trio was coming downstairs..." },
+            { type: 'narration', html: "And we suddenly crossed paths right outside the exit gate. 🚪", effect: 'sparkle' },
+            { type: 'narration', html: "That's when you looked at me and casually dropped the line..." },
+            { type: 'chat', speaker: 'You 👑', cls: 'her', text: "Aaj kal toh Diptanshu ke bhav chad gaye hai! 🙄", effect: 'scold' },
+            { type: 'narration', html: "Oh, my heart sank. 💔" },
+            { type: 'narration', html: "I felt so terribly bad that day... realizing I was truly failing at talking to you enough." },
+            { type: 'narration', html: "So, right then and there, I made a firm decision." },
+            { type: 'narration', html: "I decided I was going to talk to you as much as I possibly could. 💫", effect: 'resolve' },
+            { type: 'narration', html: "<span class='highlight' style='font-size:3.5rem; margin-top:20px; display:inline-block;'>To be continued...</span>", effect: 'end' }
+        ];
+
+        let currentIndex = 0;
+        let isAnimating = false;
+        const container = document.getElementById('story-container');
+        const instruction = document.getElementById('instruction');
+
+        function showNextLine() {
+            if (currentIndex >= storyLines.length || isAnimating) return;
+            isAnimating = true;
+
+            const lineData = storyLines[currentIndex];
+
+            const existingLines = container.querySelectorAll('.story-item');
+            existingLines.forEach(line => {
+                let lvl = parseInt(line.getAttribute('data-level') || 0);
+                lvl++;
+                line.setAttribute('data-level', lvl);
+                line.className = `story-item level-${lvl}`;
+            });
+
+            const el = document.createElement('div');
+            el.className = 'story-item active';
+            el.setAttribute('data-level', '0');
+            
+            if (lineData.type === 'narration') {
+                el.innerHTML = `<div class="narration">${lineData.html}</div>`;
+            } else if (lineData.type === 'chat') {
+                el.innerHTML = `
+                    <div class="chat-container ${lineData.cls}" style="align-items: center;">
+                        <span class="speaker-name" style="margin-left:0;">${lineData.speaker}</span>
+                        <div class="chat-bubble" style="text-align:center;">${lineData.text}</div>
+                    </div>
+                `;
+            }
+            container.appendChild(el);
+
+            if (lineData.type === 'narration') {
+                const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null, false);
+                const textNodes = [];
+                let node;
+                while(node = walker.nextNode()) {
+                    if(node.nodeValue.trim() !== '') textNodes.push(node);
+                }
+                
+                let wordIndex = 0;
+                textNodes.forEach(textNode => {
+                    const text = textNode.nodeValue;
+                    const fragment = document.createDocumentFragment();
+                    const words = text.split(/(\s+)/); 
+                    words.forEach(w => {
+                        if (w.match(/^\s+$/)) {
+                            fragment.appendChild(document.createTextNode(w));
+                        } else if(w.length > 0) {
+                            const span = document.createElement('span');
+                            span.className = 'anim-word';
+                            span.innerHTML = w;
+                            span.style.animationDelay = (wordIndex * 150) + 'ms';
+                            fragment.appendChild(span);
+                            wordIndex++;
+                        }
+                    });
+                    textNode.parentNode.replaceChild(fragment, textNode);
+                });
+                setTimeout(() => { isAnimating = false; }, (wordIndex * 150) + 600);
+            } else {
+                setTimeout(() => { isAnimating = false; }, 800);
+            }
+
+            if (lineData.effect === 'scold') triggerScold();
+            if (lineData.effect === 'sparkle') triggerSparkles();
+            if (lineData.effect === 'resolve') triggerResolve();
+            if (lineData.effect === 'end') addNextChapterLink();
+
+            currentIndex++;
+            if (currentIndex >= storyLines.length) {
+                instruction.innerText = "The catalyst... 🌟";
+                instruction.style.animation = "none";
+                instruction.style.opacity = "1";
+            }
+        }
+
+        document.body.addEventListener('click', (e) => {
+            if (e.target.closest('a')) return;
+            createRipple(e.clientX, e.clientY);
+            showNextLine();
+        });
+
+        setTimeout(showNextLine, 1000);
+
+        function createRipple(x, y) {
+            const ripple = document.createElement('div');
+            ripple.style.position = 'absolute';
+            ripple.style.left = x + 'px';
+            ripple.style.top = y + 'px';
+            ripple.style.width = '10px';
+            ripple.style.height = '10px';
+            ripple.style.background = 'rgba(255,255,255,0.5)';
+            ripple.style.borderRadius = '50%';
+            ripple.style.transform = 'translate(-50%, -50%)';
+            ripple.style.pointerEvents = 'none';
+            ripple.style.animation = 'rippleOut 0.8s ease-out forwards';
+            document.body.appendChild(ripple);
+            setTimeout(() => ripple.remove(), 800);
+        }
+
+        const rippleStyle = document.createElement('style');
+        rippleStyle.innerHTML = `@keyframes rippleOut { 0% { transform: translate(-50%, -50%) scale(0); opacity: 1; } 100% { transform: translate(-50%, -50%) scale(15); opacity: 0; } }`;
+        document.head.appendChild(rippleStyle);
+
+        function triggerScold() {
+            document.body.style.transition = 'background 0.2s';
+            let oldBg = document.body.style.background;
+            document.body.style.background = '#4a0e1c';
+            setTimeout(() => {
+                document.body.style.transition = 'background 2s ease';
+                document.body.style.background = oldBg;
+            }, 500);
+        }
+
+        function triggerSparkles() {
+            for(let i=0; i<40; i++) {
+                setTimeout(() => {
+                    const spark = document.createElement('div');
+                    spark.className = 'sparkle-burst';
+                    spark.style.left = Math.random() * window.innerWidth + 'px';
+                    spark.style.top = Math.random() * window.innerHeight + 'px';
+                    spark.style.setProperty('--tx', ((Math.random() - 0.5) * 300) + 'px');
+                    spark.style.setProperty('--ty', ((Math.random() - 0.5) * 300) + 'px');
+                    document.body.appendChild(spark);
+                    setTimeout(() => spark.remove(), 1000);
+                }, i * 30);
+            }
+        }
+        
+        function triggerResolve() {
+            for(let i=0; i<20; i++) {
+                setTimeout(() => {
+                    const emoji = document.createElement('div');
+                    emoji.className = 'floating-emoji';
+                    emoji.innerText = '✨';
+                    emoji.style.left = (Math.random() * window.innerWidth) + 'px';
+                    emoji.style.top = (window.innerHeight + 50) + 'px';
+                    emoji.style.setProperty('--randX', ((Math.random() - 0.5) * 150) + 'px');
+                    document.body.appendChild(emoji);
+                    setTimeout(() => emoji.remove(), 3000);
+                }, i * 150);
+            }
+        }
+
+        function addNextChapterLink() {
+            setTimeout(() => {
+                const linkContainer = document.createElement('div');
+                linkContainer.className = 'story-item active';
+                linkContainer.setAttribute('data-level', '0');
+                linkContainer.style.marginTop = "40px";
+                linkContainer.style.textAlign = "center";
+                linkContainer.style.width = "100%";
+                
+                const nextBtn = document.createElement('a');
+                nextBtn.href = "2022_moment5.html";
+                nextBtn.innerHTML = "Continue the Story →";
+                nextBtn.style.display = "inline-block";
+                nextBtn.style.padding = "20px 40px";
+                nextBtn.style.background = "linear-gradient(45deg, #4facfe, #00f2fe)";
+                nextBtn.style.color = "#111";
+                nextBtn.style.textDecoration = "none";
+                nextBtn.style.borderRadius = "50px";
+                nextBtn.style.fontFamily = "'Montserrat', sans-serif";
+                nextBtn.style.fontWeight = "600";
+                nextBtn.style.fontSize = "1.3rem";
+                nextBtn.style.boxShadow = "0 10px 30px rgba(79, 172, 254, 0.4)";
+                nextBtn.style.transition = "all 0.3s";
+                nextBtn.style.animation = "pulseText 2s infinite";
+                nextBtn.style.pointerEvents = "auto";
+                
+                nextBtn.onmouseover = () => { nextBtn.style.transform = "scale(1.1)"; };
+                nextBtn.onmouseout = () => { nextBtn.style.transform = "scale(1)"; };
+
+                linkContainer.appendChild(nextBtn);
+                container.appendChild(linkContainer);
+                
+                const existingLines = container.querySelectorAll('.story-item:not(:last-child)');
+                existingLines.forEach(line => {
+                    let lvl = parseInt(line.getAttribute('data-level') || 0);
+                    lvl++;
+                    line.setAttribute('data-level', lvl);
+                    line.className = `story-item level-${lvl}`;
+                });
+                
+                instruction.style.display = 'none';
+            }, 2000);
+        }
+    </script>
+</body>
+</html>

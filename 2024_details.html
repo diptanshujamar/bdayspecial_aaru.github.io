@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The 2024 Details</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Montserrat:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #f6d365;
+            --secondary-color: #fda085;
+            --text-dark: #3e2723;
+        }
+        body { margin: 0; font-family: 'Montserrat', sans-serif; background: linear-gradient(135deg, #fff1eb 0%, #ace0f9 100%); min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; }
+
+        /* 2024 Golden Sunburst Preloader */
+        #sunburst-preloader { position: fixed; inset: 0; background: radial-gradient(circle at center, #ffd32a 0%, #e1b12c 100%); z-index: 9999999; display: flex; justify-content: center; align-items: center; flex-direction: column; transition: opacity 1.2s ease, visibility 1.2s; overflow: hidden; }
+        #sunburst-preloader.hidden { opacity: 0; visibility: hidden; }
+        
+        .sun-core { width: 100px; height: 100px; border-radius: 50%; background: #fff; box-shadow: 0 0 50px #fff, 0 0 100px #f6d365; position: relative; animation: pulseSun 2s infinite alternate; }
+        .sun-ring { margin-bottom: 50px; display: flex; justify-content: center; align-items: center; position: relative; width: 150px; height: 150px; border: 4px solid rgba(255,255,255,0.4); border-radius: 50%; animation: spinSun 10s linear infinite; }
+        .sun-ring::before, .sun-ring::after { content: ''; position: absolute; width: 20px; height: 20px; background: #fff; border-radius: 50%; }
+        .sun-ring::before { top: -10px; left: 50%; transform: translateX(-50%); box-shadow: 0 0 20px #fff; }
+        .sun-ring::after { bottom: -10px; left: 50%; transform: translateX(-50%); box-shadow: 0 0 20px #fff; }
+
+        @keyframes pulseSun { 0% { transform: scale(0.9); box-shadow: 0 0 30px #fff; } 100% { transform: scale(1.1); box-shadow: 0 0 80px #fff, 0 0 150px #f6d365; } }
+        @keyframes spinSun { 100% { transform: rotate(360deg); } }
+
+        .loading-text { font-family: 'Dancing Script', cursive; font-size: 3.5rem; color: #fff; text-shadow: 0 0 20px rgba(255,255,255,0.8); display: flex; justify-content: center; margin-bottom: 20px; }
+        .loading-text span { opacity: 0; transform: translateY(-20px); animation: dropIn 0.8s forwards, textGlimmer 2s infinite alternate; }
+        @keyframes dropIn { to { opacity: 1; transform: translateY(0); } }
+        @keyframes textGlimmer { from { opacity: 0.8; } to { opacity: 1; text-shadow: 0 0 30px #fff; } }
+
+        .sun-rays { position: absolute; inset: 0; background: conic-gradient(from 0deg, transparent 0deg, rgba(255,255,255,0.2) 20deg, transparent 40deg, rgba(255,255,255,0.2) 60deg, transparent 80deg, rgba(255,255,255,0.2) 100deg, transparent 120deg, rgba(255,255,255,0.2) 140deg, transparent 160deg, rgba(255,255,255,0.2) 180deg, transparent 200deg, rgba(255,255,255,0.2) 220deg, transparent 240deg, rgba(255,255,255,0.2) 260deg, transparent 280deg, rgba(255,255,255,0.2) 300deg, transparent 320deg, rgba(255,255,255,0.2) 340deg, transparent 360deg); animation: spinRays 20s linear infinite; pointer-events: none; }
+        @keyframes spinRays { 100% { transform: rotate(360deg); } }
+
+        /* General page */
+        .content { flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; transform: scale(0.9); transition: 1s ease; }
+        body.preloader-finished .content { opacity: 1; transform: scale(1); }
+
+        h1 { font-family: 'Dancing Script', cursive; font-size: 5rem; color: #e1b12c; margin-bottom: 20px; text-shadow: 0 5px 15px rgba(246,211,101,0.5); }
+        p { font-size: 1.2rem; color: #555; max-width: 600px; line-height: 1.6; text-align: center; }
+        
+        .btn-back { display: inline-block; padding: 15px 40px; background: #e1b12c; color: #fff; text-decoration: none; border-radius: 50px; font-weight: bold; margin-top: 40px; transition: 0.3s; box-shadow: 0 10px 20px rgba(225, 177, 44, 0.4); }
+        .btn-back:hover { transform: scale(1.05); box-shadow: 0 15px 30px rgba(225, 177, 44, 0.6); }
+
+        body.is-loading { overflow: hidden; height: 100vh; }
+    </style>
+</head>
+<body class="is-loading">
+
+    <div id="sunburst-preloader">
+        <div class="sun-rays"></div>
+        <div class="sun-ring">
+            <div class="sun-core"></div>
+        </div>
+        <div class="loading-text">
+            <span>2</span><span>0</span><span>2</span><span>4</span><span>&nbsp;</span><span>M</span><span>e</span><span>m</span><span>o</span><span>r</span><span>i</span><span>e</span><span>s</span><span>...</span>
+        </div>
+    </div>
+
+    <div class="content">
+        <h1>2024 Timeline</h1>
+        <p>The golden era of our story continues here. This is waiting for you to add your next memories...</p>
+        <a href="index.html" class="btn-back">← Back to Eras</a>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const preloader = document.getElementById('sunburst-preloader');
+            const spans = document.querySelectorAll('.loading-text span');
+            
+            spans.forEach((span, i) => { span.style.animationDelay = `${i * 0.1}s`; });
+
+            setTimeout(() => {
+                preloader.classList.add('hidden');
+                document.body.classList.remove('is-loading');
+                setTimeout(() => { 
+                    preloader.style.display = 'none'; 
+                    document.body.classList.add('preloader-finished');
+                }, 1200);
+            }, 3000);
+        });
+    </script>
+</body>
+</html>
